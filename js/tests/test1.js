@@ -1,17 +1,36 @@
 "use strict";
 define([
     'Logger'
-], function(Log){
+], function(Logger){
   function run () {
-    test('Log should exists', function(){
-      ok(typeof Log, 'object', 'Lib should exists');
+    test('Logger should exists', function(){
+      ok(typeof Logger, 'object', 'Logger module should exists');
     });
 
-    var module = {id: 'testModule'};
-    var log = Log.register(module);
-    test('Log should created with module', function(){
-      equal(log.id, module.id, 'id should take from module.id');
+    test('Logger should parse requirejs config', function(){
+      ok(typeof Logger, 'object', 'Logger module should exists');
     });
+
+    var module1 = 'testModuleName1';
+    var log1 = Logger.register(module1);
+    test('logger should be created with string name', function(){
+      equal(log1.id, module1, 'argument should be assigned to log1.id ');
+    });
+
+    var module2 = {id: 'testModuleName2'};
+    var log2 = Logger.register(module2);
+    test('logger should be created with module', function(){
+      equal(log2.id, module2.id, 'id should be assigned from module2.id');
+    });
+
+    var log3 = Logger.register(module2);
+    test('logger should return existed logger', function(){
+      equal(log3, log2, 'objects should be the same');
+    });
+
+
+
+
   }
   return {run: run};
 });

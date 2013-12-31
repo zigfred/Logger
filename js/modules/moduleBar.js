@@ -6,16 +6,33 @@ define([
 
   function start() {
     var log = Logger.register(module);
-    log.info("Initialized");
+    var log2 = Logger.register({
+      id: module, // or module.id
+      level: 'debug',
+      enable: false
+    });
+
+    var log3 = Logger.register({
+      id: 'root', // 'myLog123'
+      level: 'error'
+    });
+
+    Logger.disable();
+    log.error('should not fire');
+    Logger.enable();
+
+
+    log.info("bar Initialized");
     try {
       //do some stuff
       log.debug("Blabla");
+      log.qwe()
       //do some stuff
     }catch (e){
       log.error(e);
     }
 
-    log.info("Initialized");
+    log.info("bar end");
   }
 
   return {start: start};
