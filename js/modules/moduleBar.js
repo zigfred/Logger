@@ -6,10 +6,6 @@ define([
 
   function start() {
     var log = Logger.register(module);
-    var log2 = Logger.register({
-      id: module, // or module.id
-      level: 'debug'
-    });
 
     var log3 = Logger.register({
       id: 'root', // 'myLog123'

@@ -9,6 +9,7 @@
  * @version: 0
  */
 define(function(require, exports, module){
+    var config = module.config();
     function inherit(child, parent) {
         var F = function() {
         };
@@ -22,13 +23,13 @@ define(function(require, exports, module){
         this.level = level;
         this.name = name;
     }
-    Level.prototype.isGreaterThan = function(loggerLevel, logItemLevel) {
-        return loggerLevel <= logItemLevel;
+    Level.prototype.isGreaterOrEqual = function(logItemLevel) {
+        return this.level >= logItemLevel.level;
     };
     Level.prototype.toString = function() {
-        return this.value;
+        return this.name;
     };
-    Level.prototype.getLevel = function(level) {
+    Level.getLevel = function(level) {
         return Level[level.toUpperCase()];
     };
     Level["ALL"] = new Level(Number.MIN_VALUE, "ALL");
@@ -39,9 +40,9 @@ define(function(require, exports, module){
     Level["OFF"] = new Level(Number.MAX_VALUE, "OFF");
 
 
-    function Logger(options) {
-        this._id = options.id;
-        this._level = options.level;
+    function Logger(settings) {
+        this._id = settings.id;
+        this._level = settings.level;
     }
     Logger.prototype.getLevel = function() {
         return this._level;
@@ -51,27 +52,95 @@ define(function(require, exports, module){
         this._level = level;
     };
     Logger.prototype.prepareLogItem = function(logItem) {
+        if (!LoggerManager.enabled) return;
+        if (!logItem.level.isGreaterOrEqual(this._level)
+            && LoggerManager.levelImportant === "local") return;
+        if (!logItem.level.isGreaterOrEqual(LoggerManager.levelImportant)
+            && LoggerManager.levelImportant !== "local") return;
+
+        logItem.id = this._id;
         logItem.args = Array.prototype.slice.call(logItem.args, 0);
+        logItem.time = new Date();
 
+        var stack = new Error().stack;
+        var lineAccessingLogger = stack.split("\n")[3];
+        logItem.file = lineAccessingLogger.match(/\/(\w+\.\w+:\d+)/i)[1];
+
+        var logParams = [];
+        logParams.push('%s %s [%s] - %s');
+        logParams.push(logItem.time.toLocaleTimeString());
+        logParams.push(logItem.id);
+        logParams.push(logItem.level.toString());
+        logParams = logParams.concat(logItem.args);
+        console[logItem.level.toString().toLowerCase()].apply(console, logParams);
 
     };
-    var logMethods = ["info", "log", "debug", "warn", "error"];
-    for (var i = 0, l = logMethods.length; i < l; i++) {
-        Logger.prototype[logMethods[i]] = function() {
-            this.prepareLogItem({
-                level: logMethods[i],
-                args: arguments
-            });
-        };
-    }
-
-    function LoggerManager() {
-
-    }
-    LoggerManager.prototype.register = function(options) {
-        // TODO parse options
-
-        return new Logger();
+    Logger.prototype.log = function() {
+        this.prepareLogItem({
+            level: Level.getLevel("info"),
+            args: arguments
+        });
     };
+    Logger.prototype.info = function() {
+        this.prepareLogItem({
+            level: Level.getLevel("info"),
+            args: arguments
+        });
+    };
+    Logger.prototype.debug = function() {
+        this.prepareLogItem({
+            level: Level.getLevel("debug"),
+            args: arguments
+        });
+    };
+    Logger.prototype.warn = function() {
+        this.prepareLogItem({
+            level: Level.getLevel("warn"),
+            args: arguments
+        });
+    };
+    Logger.prototype.error = function() {
+        this.prepareLogItem({
+            level: Level.getLevel("error"),
+            args: arguments
+        });
+    };
+
+    var LoggerManager = {
+        enabled: (typeof config.enabled === "boolean") ? config.enabled : true,
+        levelImportant: (typeof config.levelImportant === "string") ? config.levelImportant : "local",
+        loggers: {},
+        register: function(options) {
+            var settings = {
+                id: "root",
+                level: (this.levelImportant === "local") ? Level.getLevel("ALL") : this.levelImportant
+            };
+
+            if (typeof options === "string" && options !== "") {
+                settings.id = options;
+            } else if (options.hasOwnProperty("id")) {
+                settings.id = options.id;
+
+                if (options.hasOwnProperty("level")) {
+                    settings.level = Level.getLevel(options.level);
+                }
+                if (options.hasOwnProperty("appenders")) {
+                    settings._appenders = options.appenders.slice();
+                }
+            }
+            if (this.loggers.hasOwnProperty(settings.id)) {
+                return this.loggers[settings.id];
+            } else {
+                return this.loggers[settings.id] = new Logger(settings);
+            }
+        },
+        disable: function() {
+            this.enabled = false;
+        },
+        enable: function() {
+            this.enabled = true;
+        }
+    };
+    window.LoggerManager = LoggerManager;
     return LoggerManager;
 });
