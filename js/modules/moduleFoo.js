@@ -5,7 +5,7 @@ define([
   "use strict";
 
   function start() {
-    var log = Logger.register(module, {
+    var log = Logger.register(module/*, {
       appenders: [{
         type: 'console',
         enable: false
@@ -14,7 +14,7 @@ define([
         enable: true,
         url: 'test.com'
       }]
-    });
+    }*/);
     log.info("foo Initialized");
     try {
       //do some stuff

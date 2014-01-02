@@ -14,13 +14,13 @@ define([
     var module1 = 'testModuleName1';
     var log1 = Logger.register(module1);
     test('logger should be created with string name', function(){
-      equal(log1.id, module1, 'argument should be assigned to log1.id ');
+      equal(log1._id, module1, 'argument should be assigned to log1.id ');
     });
 
     var module2 = {id: 'testModuleName2'};
     var log2 = Logger.register(module2);
     test('logger should be created with module', function(){
-      equal(log2.id, module2.id, 'id should be assigned from module2.id');
+      equal(log2._id, module2.id, 'id should be assigned from module2.id');
     });
 
     var log3 = Logger.register(module2);

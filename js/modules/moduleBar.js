@@ -8,8 +8,7 @@ define([
     var log = Logger.register(module);
     var log2 = Logger.register({
       id: module, // or module.id
-      level: 'debug',
-      enable: false
+      level: 'debug'
     });
 
     var log3 = Logger.register({
@@ -19,7 +18,7 @@ define([
 
     Logger.disable();
     log.error('should not fire');
-    Logger.enable();
+    Logger.enable("warn");
 
 
     log.info("bar Initialized");
