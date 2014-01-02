@@ -26,7 +26,6 @@ require(
     [
       'QUnit',
       'tests/test1',
-      'Logger',
       'modules/moduleFoo',
       'modules/moduleBar'
     ], function(
@@ -36,13 +35,13 @@ require(
         moduleBar
         ) {
         // run the tests.
-      //Test1.run();
+      Test1.run();
 
         // start QUnit.
-      //QUnit.load();
-      //QUnit.start();
+      QUnit.load();
+      QUnit.start();
 
       moduleFoo.start();
-      //moduleBar.start();
+      moduleBar.start();
     }
 );

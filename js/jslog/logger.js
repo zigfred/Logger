@@ -1,8 +1,23 @@
 /*
-js logger
+ * Copyright (C) 2005 - 2013 Jaspersoft Corporation. All rights reserved.
+ * http://www.jaspersoft.com.
+ * Licensed under commercial Jaspersoft Subscription License Agreement
+ */
+
+/**
+ * @author: psavushchik
+ * @version: 0
  */
 define(function(require, exports, module){
-
+    function inherit(child, parent) {
+        var F = function() {
+        };
+        F.prototype = parent.prototype;
+        child.prototype = new F();
+        child.prototype.constructor = child;
+        return child;
+    }
+    
     function Level(level, name) {
         this.level = level;
         this.name = name;
