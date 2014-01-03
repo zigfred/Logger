@@ -18,8 +18,7 @@ requirejs.config({
   config: {
     Logger: {
       enabled: true,
-      levelImportant: "local", // high priority levels, or local
-      appenders: ["console"]
+      levelImportant: "local" // high priority levels, or local
     }
   }
 });

@@ -43,6 +43,7 @@ define(function(require, exports, module){
     function Logger(settings) {
         this._id = settings.id;
         this._level = settings.level;
+        this._appenders = settings.appenders;
     }
     Logger.prototype.getLevel = function() {
         return this._level;
@@ -52,15 +53,9 @@ define(function(require, exports, module){
         this._level = level;
     };
     Logger.prototype.prepareLogItem = function(logItem) {
-        /*
-        if (!LoggerManager.enabled) return;
-        if (!logItem.level.isGreaterOrEqual(this._level)
-            && LoggerManager.levelImportant === "local") return;
-        if (!logItem.level.isGreaterOrEqual(LoggerManager.levelImportant)
-            && LoggerManager.levelImportant !== "local") return;
-        */
-
         logItem.id = this._id;
+        logItem.appenders = this._appenders;
+        logItem.loggerLevel = this._level;
         logItem.args = Array.prototype.slice.call(logItem.args, 0);
         logItem.time = new Date();
 
@@ -70,12 +65,7 @@ define(function(require, exports, module){
         logItem.file = res[1];
         logItem.line = res[2];
 
-        logItem = new LogItem(logItem);
-
-        LoggerManager.pushItem(logItem);
-
-
-
+        LoggerManager.addLogItem(logItem);
     };
     Logger.prototype.log = function() {
         this.prepareLogItem({
@@ -131,15 +121,85 @@ define(function(require, exports, module){
         return logParams.join(" ");
     };
 
+    function Appender(type) {}
+
+    Appender.bp = {};
+    Appender.prototype.write = function() {};
+    Appender.createAppender = function(type) {
+        if (!type || type === "") type = "console";
+        var args = Array.prototype.slice.call(arguments, 1);
+        return new Appender.bp[type](args);
+    };
+
+    function ConsoleAppender() {}
+
+    inherit(ConsoleAppender, Appender);
+    Appender.bp.console = ConsoleAppender;
+
+    ConsoleAppender.prototype.console = (function() {
+        if (!window.console) {
+            var f = function() {};
+            return {
+                assert: f,
+                clear: f,
+                count: f,
+                debug: f,
+                dir: f,
+                dirxml: f,
+                error: f,
+                group: f,
+                groupCollapsed: f,
+                groupEnd: f,
+                info: f,
+                log: f,
+                markTimeline: f,
+                profile: f,
+                profileEnd: f,
+                table: f,
+                time: f,
+                timeEnd: f,
+                timeStamp: f,
+                trace: f,
+                warn: f
+            }
+        } else {
+            return console;
+        }
+    })();
+    ConsoleAppender.prototype.write = function(logItem) {
+        var f = this.console.log;
+        switch (logItem.level.toString()) {
+            case "TRACE":
+                f = this.console.trace;
+                break;
+            case "DEBUG":
+            case "INFO":
+                f = this.console.info;
+                break;
+            case "WARN":
+                f = this.console.warn;
+                break;
+            case "ERROR":
+                f = this.console.error;
+                break;
+        }
+
+        f.call(this.console, logItem.toString());
+    };
+
     var LoggerManager = {
         enabled: (typeof config.enabled === "boolean") ? config.enabled : true,
         levelImportant: (typeof config.levelImportant === "string") ? config.levelImportant : "local",
         loggers: {},
         logList: [],
+        appenders: {
+            console: Appender.createAppender("console")
+        },
         register: function(options) {
             var settings = {
                 id: "root",
-                level: (this.levelImportant === "local") ? Level.getLevel("ALL") : this.levelImportant
+                level: (this.levelImportant === "local") ? Level.getLevel("ALL") : this.levelImportant,
+                appenders: ["console"]
             };
 
             if (typeof options === "string" && options !== "") {
@@ -151,7 +211,7 @@ define(function(require, exports, module){
                     settings.level = Level.getLevel(options.level);
                 }
                 if (options.hasOwnProperty("appenders")) {
-                    settings._appenders = options.appenders.slice();
+                    settings.appenders = options.appenders.slice();
                 }
             }
             if (this.loggers.hasOwnProperty(settings.id)) {
@@ -166,8 +226,25 @@ define(function(require, exports, module){
         enable: function() {
             this.enabled = true;
         },
-        pushItem: function(logItem) {
+        addLogItem: function(logItem) {
+            logItem = new LogItem(logItem);
             this.logList.push(logItem);
+
+            this.appendLogItem(logItem);
+        },
+        appendLogItem: function(logItem) {
+            var isLocal = this.levelImportant === "local",
+                isImportantAllow = false,
+                isLocalAllow = false;
+
+            for (var i = 0, l = logItem.appenders.length; i < l; i++) {
+                isLocalAllow = logItem.level.isGreaterOrEqual(logItem.loggerLevel);
+                isImportantAllow = logItem.level.isGreaterOrEqual(this.levelImportant);
+
+                if (this.enabled && ((isLocal && isLocalAllow) || (!isLocal && isImportantAllow))) {
+                    this.appenders[logItem.appenders[i]].write(logItem);
+                }
+            }
         }
     };
     window.LoggerManager = LoggerManager;
