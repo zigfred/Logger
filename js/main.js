@@ -1,47 +1,39 @@
 requirejs.config({
-  baseUrl: 'js',
+  baseUrl: "js",
   paths: {
-    'QUnit': 'libs/qunit-1.12.0',
-    'Logger': 'jslog/logger'
+    "QUnit": "libs/qunit-1.12.0",
+    "Logger": "jslog/logger",
+      "jasmine": "libs/jasmine",
+      "jasmine-html": "libs/jasmine-html"
   },
   shim: {
-    'QUnit': {
-      exports: 'QUnit',
-      init: function() {
-        QUnit.config.autoload = false;
-        QUnit.config.autostart = false;
+      "jasmine": {
+          exports: "jasmine"
+      },
+      "jasmine-html": {
+          deps: ["jasmine"],
+          exports: "jasmine"
       }
-    }
   },
   config: {
     Logger: {
       enabled: true,
-      levelImportant: 'local', // high priority levels, or local
-      appenders: ['console']
+      levelImportant: "local", // high priority levels, or local
+      appenders: ["console"]
     }
   }
 });
 
 require(
     [
-      'QUnit',
-      'tests/test1',
-      'modules/moduleFoo',
-      'modules/moduleBar'
-    ], function(
-        QUnit,
-        Test1,
-        moduleFoo,
-        moduleBar
-        ) {
-        // run the tests.
-      Test1.run();
+        "tests/index",
+        "modules/moduleFoo",
+        "modules/moduleBar"
+    ], function(test, moduleFoo, moduleBar) {
 
-        // start QUnit.
-      QUnit.load();
-      QUnit.start();
+        test.start();
 
-      moduleFoo.start();
-      moduleBar.start();
+        //moduleFoo.start();
+        //moduleBar.start();
     }
 );
