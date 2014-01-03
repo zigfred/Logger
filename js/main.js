@@ -33,7 +33,7 @@ require(
 
         test.start();
 
-        //moduleFoo.start();
-        //moduleBar.start();
+        moduleFoo.start();
+        moduleBar.start();
     }
 );

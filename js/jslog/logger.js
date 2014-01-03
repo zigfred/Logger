@@ -52,11 +52,13 @@ define(function(require, exports, module){
         this._level = level;
     };
     Logger.prototype.prepareLogItem = function(logItem) {
+        /*
         if (!LoggerManager.enabled) return;
         if (!logItem.level.isGreaterOrEqual(this._level)
             && LoggerManager.levelImportant === "local") return;
         if (!logItem.level.isGreaterOrEqual(LoggerManager.levelImportant)
             && LoggerManager.levelImportant !== "local") return;
+        */
 
         logItem.id = this._id;
         logItem.args = Array.prototype.slice.call(logItem.args, 0);
@@ -64,15 +66,15 @@ define(function(require, exports, module){
 
         var stack = new Error().stack;
         var lineAccessingLogger = stack.split("\n")[3];
-        logItem.file = lineAccessingLogger.match(/\/(\w+\.\w+:\d+)/i)[1];
+        var res = lineAccessingLogger.match(/\/(\w+\.\w+):(\d+)/i);
+        logItem.file = res[1];
+        logItem.line = res[2];
 
-        var logParams = [];
-        logParams.push('%s %s [%s] - %s');
-        logParams.push(logItem.time.toLocaleTimeString());
-        logParams.push(logItem.id);
-        logParams.push(logItem.level.toString());
-        logParams = logParams.concat(logItem.args);
-        console[logItem.level.toString().toLowerCase()].apply(console, logParams);
+        logItem = new LogItem(logItem);
+
+        LoggerManager.pushItem(logItem);
+
+
 
     };
     Logger.prototype.log = function() {
@@ -106,10 +108,34 @@ define(function(require, exports, module){
         });
     };
 
+    /**
+     * new LogItem()
+     *
+     * @param options
+     * @constructor
+     */
+    function LogItem(options) {
+        for (var i in options) {
+            if (options.hasOwnProperty(i)) {
+                this[i] = options[i];
+            }
+        }
+    }
+    LogItem.prototype.toString = function(){
+        var logParams = [];
+        logParams.push(this.time.toLocaleTimeString());
+        logParams.push(this.id);
+        logParams.push("[" + this.level.toString() + "] -");
+        logParams = logParams.concat(this.args);
+
+        return logParams.join(" ");
+    };
+
     var LoggerManager = {
         enabled: (typeof config.enabled === "boolean") ? config.enabled : true,
         levelImportant: (typeof config.levelImportant === "string") ? config.levelImportant : "local",
         loggers: {},
+        logList: [],
         register: function(options) {
             var settings = {
                 id: "root",
@@ -139,6 +165,9 @@ define(function(require, exports, module){
         },
         enable: function() {
             this.enabled = true;
+        },
+        pushItem: function(logItem) {
+            this.logList.push(logItem);
         }
     };
     window.LoggerManager = LoggerManager;
