@@ -144,7 +144,7 @@ define(function(require, exports, module){
 
             if (typeof options === "string" && options !== "") {
                 settings.id = options;
-            } else if (options.hasOwnProperty("id")) {
+            } else if (options && options.hasOwnProperty("id")) {
                 settings.id = options.id;
 
                 if (options.hasOwnProperty("level")) {
