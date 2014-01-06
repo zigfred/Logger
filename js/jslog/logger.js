@@ -8,8 +8,9 @@
  * @author: psavushchik
  * @version: 0
  */
-define(function(require, exports, module){
+define(function(require, exports, module) {
     var config = module.config();
+
     function inherit(child, parent) {
         var F = function() {
         };
@@ -18,11 +19,12 @@ define(function(require, exports, module){
         child.prototype.constructor = child;
         return child;
     }
-    
+
     function Level(level, name) {
         this.level = level;
         this.name = name;
     }
+
     Level.prototype.isGreaterOrEqual = function(logItemLevel) {
         return this.level >= logItemLevel.level;
     };
@@ -39,12 +41,12 @@ define(function(require, exports, module){
     Level["ERROR"] = new Level(400, "ERROR");
     Level["OFF"] = new Level(Number.MAX_VALUE, "OFF");
 
-
     function Logger(settings) {
         this._id = settings.id;
         this._level = settings.level;
         this._appenders = settings.appenders;
     }
+
     Logger.prototype.getLevel = function() {
         return this._level;
     };
@@ -111,7 +113,8 @@ define(function(require, exports, module){
             }
         }
     }
-    LogItem.prototype.toString = function(){
+
+    LogItem.prototype.toString = function() {
         var logParams = [];
         logParams.push(this.time.toLocaleTimeString());
         logParams.push(this.id);
@@ -121,24 +124,30 @@ define(function(require, exports, module){
         return logParams.join(" ");
     };
 
-    function Appender(type) {}
+    function Appender(type) {
+    }
 
     Appender.bp = {};
-    Appender.prototype.write = function() {};
+    Appender.prototype.write = function() {
+    };
     Appender.createAppender = function(type) {
-        if (!type || type === "") type = "console";
+        if (!type || type === "") {
+            type = "console";
+        }
         var args = Array.prototype.slice.call(arguments, 1);
         return new Appender.bp[type](args);
     };
 
-    function ConsoleAppender() {}
+    function ConsoleAppender() {
+    }
 
     inherit(ConsoleAppender, Appender);
     Appender.bp.console = ConsoleAppender;
 
     ConsoleAppender.prototype.console = (function() {
         if (!window.console) {
-            var f = function() {};
+            var f = function() {
+            };
             return {
                 assert: f,
                 clear: f,
