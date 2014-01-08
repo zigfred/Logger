@@ -1,0 +1,22 @@
+{
+    "name": "jslog",
+    "author": {
+        "name": "Pavlo Savushchyk",
+        "email": "pavlo.savushchyk@globallogic.com"
+    },
+    "description": "Logger",
+    "version": "0.0.1",
+    "private": true,
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/zigfred/jslog.git"
+    },
+    "engines": {
+        "node": "0.10.x",
+        "npm": "1.2.x"
+    },
+    "dependencies": {
+        "express": "3.x",
+        "redis": "0.10.x"
+    }
+}
