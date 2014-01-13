@@ -27,20 +27,23 @@
 define(function(require) {
     "use strict";
 
-    function Logger(settings) {
+    var Level = require("Logger/level");
+
+    function Log(settings, callback) {
         this._id = settings.id;
         this._level = settings.level;
         this._appenders = settings.appenders;
+        this._callback = callback;
     }
 
-    Logger.prototype.getLevel = function() {
+    Log.prototype.getLevel = function() {
         return this._level;
     };
-    Logger.prototype.setLevel = function(level) {
+    Log.prototype.setLevel = function(level) {
         // TODO parse level
         this._level = level;
     };
-    Logger.prototype.prepareLogItem = function(logItem) {
+    Log.prototype.prepareLogItem = function(logItem) {
         logItem.id = this._id;
         logItem.appenders = this._appenders;
         logItem.loggerLevel = this._level;
@@ -53,38 +56,38 @@ define(function(require) {
         logItem.file = res[1];
         logItem.line = res[2];
 
-        LoggerManager.addLogItem(logItem);
+        this._callback(logItem);
     };
-    Logger.prototype.log = function() {
+    Log.prototype.log = function() {
         this.prepareLogItem({
             level: Level.getLevel("info"),
             args: arguments
         });
     };
-    Logger.prototype.info = function() {
+    Log.prototype.info = function() {
         this.prepareLogItem({
             level: Level.getLevel("info"),
             args: arguments
         });
     };
-    Logger.prototype.debug = function() {
+    Log.prototype.debug = function() {
         this.prepareLogItem({
             level: Level.getLevel("debug"),
             args: arguments
         });
     };
-    Logger.prototype.warn = function() {
+    Log.prototype.warn = function() {
         this.prepareLogItem({
             level: Level.getLevel("warn"),
             args: arguments
         });
     };
-    Logger.prototype.error = function() {
+    Log.prototype.error = function() {
         this.prepareLogItem({
             level: Level.getLevel("error"),
             args: arguments
         });
     };
 
-
+    return Log;
 });

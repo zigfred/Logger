@@ -28,22 +28,8 @@
 define(function (require) {
     "use strict";
 
-
-    function inherit(child, parent) {
-        var F = function() {
-        };
-        F.prototype = parent.prototype;
-        child.prototype = new F();
-        child.prototype.constructor = child;
-        return child;
-    }
-
-
     function ConsoleAppender() {
     }
-
-    inherit(ConsoleAppender, Appender);
-    Appender.bp.console = ConsoleAppender;
 
     ConsoleAppender.prototype.console = (function() {
         if (!window.console) {
@@ -97,5 +83,5 @@ define(function (require) {
         f.call(this.console, logItem.toString());
     };
 
-
+    return ConsoleAppender;
 });

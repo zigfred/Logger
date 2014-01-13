@@ -28,20 +28,20 @@
 define(function (require, exports, module) {
     "use strict";
 
-    var Logger = require("logger"),
-        Levels = require("levels"),
-        LogItem = require("logItem"),
-        Appender = require("appender");
+    var Log = require("Logger/log"),
+        Level = require("Logger/level"),
+        LogItem = require("Logger/logItem"),
+        ConsoleAppender = require("Logger/appenders/console");
 
     var config = module.config();
 
-    var LoggerManager = {
+    var Logger = {
         enabled: (typeof config.enabled === "boolean") ? config.enabled : true,
         levelImportant: (typeof config.levelImportant === "string") ? config.levelImportant : "local",
         loggers: {},
         logList: [],
         appenders: {
-            console: Appender.createAppender("console")
+            console: new ConsoleAppender()
         },
         register: function(options) {
             var settings = {
@@ -65,7 +65,7 @@ define(function (require, exports, module) {
             if (this.loggers.hasOwnProperty(settings.id)) {
                 return this.loggers[settings.id];
             } else {
-                return this.loggers[settings.id] = new Logger(settings);
+                return this.loggers[settings.id] = new Log(settings, this.addLogItem.bind(this));
             }
         },
         disable: function() {
@@ -95,7 +95,7 @@ define(function (require, exports, module) {
             }
         }
     };
-    window.LoggerManager = LoggerManager;
-    return LoggerManager;
+    window.Logger = Logger;
+    return Logger;
 
 });

@@ -49,5 +49,5 @@ define(function (require) {
     Level["ERROR"] = new Level(400, "ERROR");
     Level["OFF"] = new Level(Number.MAX_VALUE, "OFF");
 
-
+    return Level;
 });

@@ -1,4 +1,4 @@
-define(['module', 'Logger'], function(module, Logger) {
+define(['module', 'logger'], function(module, Logger) {
     "use strict";
 
     function start() {

@@ -1,5 +1,5 @@
 define([
-    'module', 'Logger'
+    'module', 'logger'
 ], function(module, Logger) {
     "use strict";
 

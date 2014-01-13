@@ -1,6 +1,6 @@
 "use strict";
 define([
-    'Logger'
+    'logger'
 ], function(Logger) {
     describe("Logger module", function() {
         it("loaded module", function() {
