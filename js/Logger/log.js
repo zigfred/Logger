@@ -27,7 +27,8 @@
 define(function(require) {
     "use strict";
 
-    var Level = require("Logger/level");
+    var Level = require("Logger/level"),
+        LogItem = require("Logger/logItem");
 
     function Log(settings, callback) {
         this._id = settings.id;
@@ -45,7 +46,7 @@ define(function(require) {
         logItem.file = res[1];
         logItem.line = res[2];
 
-        this._callback(logItem);
+        this._callback(new LogItem(logItem));
     };
     Log.prototype.log = function() {
         this._prepareLogItem({

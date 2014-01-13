@@ -54,7 +54,6 @@ define(function (require, exports, module) {
 
     var Log = require("Logger/log"),
         Level = require("Logger/level"),
-        LogItem = require("Logger/logItem"),
         ConsoleAppender = require("Logger/appenders/console");
 
     var config = module.config();
@@ -92,7 +91,6 @@ define(function (require, exports, module) {
             this.enabled = true;
         },
         addLogItem: function(logItem) {
-            logItem = new LogItem(logItem);
             this.logList.push(logItem);
 
             this.appendLogItem(logItem);
