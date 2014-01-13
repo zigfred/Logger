@@ -2,7 +2,7 @@ requirejs.config({
     baseUrl: "js",
     paths: {
         "QUnit": "libs/qunit-1.12.0",
-        "Logger": "Logger/LoggerManager",
+        "logger": "logger/logger",
         "jasmine": "libs/jasmine",
         "jasmine-html": "libs/jasmine-html"
     },
