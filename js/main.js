@@ -16,9 +16,9 @@ requirejs.config({
         }
     },
     config: {
-        Logger: {
+        logger: {
             enabled: true,
-            levelImportant: "local" // high priority levels, or local
+            level: "debug"
         }
     }
 });

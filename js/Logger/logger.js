@@ -36,8 +36,9 @@ define(function (require, exports, module) {
     var config = module.config();
 
     var Logger = {
-        enabled: (typeof config.enabled === "boolean") ? config.enabled : true,
-        levelImportant: (typeof config.levelImportant === "string") ? config.levelImportant : "local",
+        enabled: (typeof config.enabled === "boolean") ? config.enabled : false,
+        level: (typeof config.level === "string") ?
+                Level.getLevel(config.level) : Level.getLevel("error"),
         loggers: {},
         logList: [],
         appenders: {
@@ -45,26 +46,19 @@ define(function (require, exports, module) {
         },
         register: function(options) {
             var settings = {
-                id: "root",
-                level: (this.levelImportant === "local") ? Level.getLevel("ALL") : this.levelImportant,
-                appenders: ["console"]
+                id: "root"
             };
 
             if (typeof options === "string" && options !== "") {
                 settings.id = options;
             } else if (options && options.hasOwnProperty("id")) {
                 settings.id = options.id;
-
-                if (options.hasOwnProperty("level")) {
-                    settings.level = Level.getLevel(options.level);
-                }
-                if (options.hasOwnProperty("appenders")) {
-                    settings.appenders = options.appenders.slice();
-                }
             }
+
             if (this.loggers.hasOwnProperty(settings.id)) {
                 return this.loggers[settings.id];
             } else {
+                // TODO replace bind for support IE8-
                 return this.loggers[settings.id] = new Log(settings, this.addLogItem.bind(this));
             }
         },
@@ -81,18 +75,15 @@ define(function (require, exports, module) {
             this.appendLogItem(logItem);
         },
         appendLogItem: function(logItem) {
-            var isLocal = this.levelImportant === "local",
-                isImportantAllow = false,
-                isLocalAllow = false;
 
-            for (var i = 0, l = logItem.appenders.length; i < l; i++) {
-                isLocalAllow = logItem.level.isGreaterOrEqual(logItem.loggerLevel);
-                isImportantAllow = logItem.level.isGreaterOrEqual(this.levelImportant);
-
-                if (this.enabled && ((isLocal && isLocalAllow) || (!isLocal && isImportantAllow))) {
-                    this.appenders[logItem.appenders[i]].write(logItem);
+            for (var i in this.appenders) {
+                if (this.appenders.hasOwnProperty(i)) {
+                    if (this.enabled && logItem.level.isGreaterOrEqual(this.level)) {
+                        this.appenders[i].write(logItem);
+                    }
                 }
             }
+
         }
     };
     window.Logger = Logger;

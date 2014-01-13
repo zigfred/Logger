@@ -31,18 +31,9 @@ define(function(require) {
 
     function Log(settings, callback) {
         this._id = settings.id;
-        this._level = settings.level;
-        this._appenders = settings.appenders;
         this._callback = callback;
     }
 
-    Log.prototype.getLevel = function() {
-        return this._level;
-    };
-    Log.prototype.setLevel = function(level) {
-        // TODO parse level
-        this._level = level;
-    };
     Log.prototype.prepareLogItem = function(logItem) {
         logItem.id = this._id;
         logItem.appenders = this._appenders;
