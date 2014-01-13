@@ -6,26 +6,22 @@
 Inserts in requirejs config.
 
 ```javascript
-{
-    enable: true, // default: false
-    cid: "cid", // default - root or getting id from app??
-    level: "debug", // default: error
-    baseUrl: "url.com/logs", // url to default REST server
-    console: true, // default: false
-    filter: ["moduleFoo"] // filter by module names for console only?
-                          // extend to rich filtering for console
-}
+requirejs.config({
+    config: {
+        logger: {
+            enabled: true,
+            level: "debug",
+            appenders: ["console"]
+        }
+    }
+});
 ```
 
 ## logItem
 
 ```javascript
 {
-    cid: "testedClient1",
-        // or another identifier or several fields - user login, session id etc.
-        // For identify logs from necessary web page by these
-        // params in logger web-client.
-    module: "moduleFoo", // root, module id, string
+    id: "moduleFoo",
     args: ["message 1", [object Error], "message 2", [object Object]],
     level: [object Level],
     time: [object Date],
@@ -35,12 +31,12 @@ Inserts in requirejs config.
 ```
 
 
-## Logger.
+## Log.
 
 Initialize:
 
 ```javascript
-var log = Logger.register("name");
+var log = Logger.register("somename");
 var log2 = Logger.register(module); // module = {id: "moduleId"}
 ```
 
@@ -52,7 +48,7 @@ Set level.
 log.info("message");
 log.warn("shit coming");
 ``` 
-#### _createItem
+#### prepareLogItem
 Create logItem object, add data such as time, cid, file, etc. Then forward it to manager.
 
 
@@ -92,37 +88,12 @@ Browser console.
 | Basic support       | Yes    | 4.0 (2.0) | 8          | Yes   | Yes    |
 | Substitution strings| Yes    | 9.0 (9.0) | 10 partial | Yes   | Yes    |
 
-### POST to REST server.
-`cid` - client id. Proxy for send multiply messages.
-
-```javascript
-POST /:cid/log
-{
-    cid: "testedClient1",
-    module: "moduleFoo",
-}
-```
-
-### callback
-just call function with `logItem`
-
 ## Levels.
-LogItem level
-Manager level
 
-
-## REST server
-Each client has id which identifies client's logs
-
-```javascript
-POST /:cid/log - save logItem
-GET /:cid/log - return logItem
-// Filters
-GET /:cid/logs
-```
-
-##  Web client for REST API - with websockets, filters
-
+debug
+info
+warn
+error
 
 
 # Usage
@@ -134,10 +105,8 @@ GET /:cid/logs
 config: {
     Logger: {
         enabled: true,
-        cid: "testSome1",
         level: "debug",
-        baseUrl: "/logs",
-        console: true
+        appenders: ["console"]
     }
 }
 ```
@@ -165,18 +134,4 @@ define(['module', 'Logger'], function(module, Logger) {
     return {start: start};
 });
 ```
-All logs will sent to server and saved.
-To view logs need open logger web client.
 
-*Here will be shoot of web client*
-Use filters for find necessary logs.
-
-
-## Case 2. Troubleshooting
-Dev1 wants to see what user1 is doing when app crashes. Dev1 sets
-flag on the server `forceLog: user1`.
-User1 loads page. Script checks Logger server and receives the response
-that it should enable logging.
-Until user1 does his work with app, app sends logs to server.
-Dev1 views all user actions and other technical information that he
-needs on Logger web client.
