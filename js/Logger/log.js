@@ -36,8 +36,6 @@ define(function(require) {
 
     Log.prototype._prepareLogItem = function(logItem) {
         logItem.id = this._id;
-        logItem.appenders = this._appenders;
-        logItem.loggerLevel = this._level;
         logItem.args = Array.prototype.slice.call(logItem.args, 0);
         logItem.time = new Date();
 
