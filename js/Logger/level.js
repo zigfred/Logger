@@ -43,8 +43,8 @@ define(function (require) {
         return Level[level.toUpperCase()];
     };
     Level["ALL"] = new Level(Number.MIN_VALUE, "ALL");
-    Level["INFO"] = new Level(100, "INFO");
-    Level["DEBUG"] = new Level(200, "DEBUG");
+    Level["DEBUG"] = new Level(100, "DEBUG");
+    Level["INFO"] = new Level(200, "INFO");
     Level["WARN"] = new Level(300, "WARN");
     Level["ERROR"] = new Level(400, "ERROR");
     Level["OFF"] = new Level(Number.MAX_VALUE, "OFF");
