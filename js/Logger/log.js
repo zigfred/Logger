@@ -34,7 +34,7 @@ define(function(require) {
         this._callback = callback;
     }
 
-    Log.prototype.prepareLogItem = function(logItem) {
+    Log.prototype._prepareLogItem = function(logItem) {
         logItem.id = this._id;
         logItem.appenders = this._appenders;
         logItem.loggerLevel = this._level;
@@ -50,31 +50,31 @@ define(function(require) {
         this._callback(logItem);
     };
     Log.prototype.log = function() {
-        this.prepareLogItem({
+        this._prepareLogItem({
             level: Level.getLevel("info"),
             args: arguments
         });
     };
     Log.prototype.info = function() {
-        this.prepareLogItem({
+        this._prepareLogItem({
             level: Level.getLevel("info"),
             args: arguments
         });
     };
     Log.prototype.debug = function() {
-        this.prepareLogItem({
+        this._prepareLogItem({
             level: Level.getLevel("debug"),
             args: arguments
         });
     };
     Log.prototype.warn = function() {
-        this.prepareLogItem({
+        this._prepareLogItem({
             level: Level.getLevel("warn"),
             args: arguments
         });
     };
     Log.prototype.error = function() {
-        this.prepareLogItem({
+        this._prepareLogItem({
             level: Level.getLevel("error"),
             args: arguments
         });
