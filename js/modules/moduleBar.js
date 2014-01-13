@@ -1,31 +1,29 @@
-define([
-    'module', 'logger'
-], function(module, Logger) {
+define(function() {
     "use strict";
 
-    function start() {
-        var log = Logger.register(module);
+    var Logger = require("logger"),
+        module = require("module");
 
-        var log3 = Logger.register({
-            id: 'root', // 'myLog123'
-            level: 'error'
-        });
+    var log = Logger.register(module);
+
+    function start() {
 
         Logger.disable();
-        log.error('should not fire');
-        Logger.enable("warn");
+        log.warn('should not fire');
+        Logger.enable("debug");
 
-        log.info("bar Initialized");
+        log.info("Initialized");
         try {
             //do some stuff
-            log.debug("Blabla");
+            log.debug("try to execute...");
             log.qwe()
             //do some stuff
+            log.warn("should not execute!!!");
         } catch (e) {
             log.error(e);
         }
 
-        log.info("bar end");
+        log.info("Finish");
     }
 
     return {start: start};
