@@ -46,4 +46,5 @@ define(function (require) {
         return logParams.join(" ");
     };
 
+    return LogItem;
 });
