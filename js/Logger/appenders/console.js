@@ -80,7 +80,7 @@ define(function (require) {
                 break;
         }
 
-        f.call(this.console, logItem.toString());
+        f.apply(this.console, logItem.toArray());
     };
 
     return ConsoleAppender;

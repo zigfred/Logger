@@ -36,14 +36,14 @@ define(function (require) {
         }
     }
 
-    LogItem.prototype.toString = function() {
+    LogItem.prototype.toArray = function() {
         var logParams = [];
         logParams.push(this.time.toLocaleTimeString());
         logParams.push(this.id);
         logParams.push("[" + this.level.toString() + "] -");
         logParams = logParams.concat(this.args);
 
-        return logParams.join(" ");
+        return logParams;
     };
 
     return LogItem;
