@@ -28,13 +28,14 @@
 define(function (require) {
     "use strict";
 
-    function ConsoleAppender() {
-    }
+    function ConsoleAppender() {}
 
     ConsoleAppender.prototype.console = (function() {
+
         if (!window.console) {
-            var f = function() {
-            };
+
+            var f = function() {};
+
             return {
                 assert: f,
                 clear: f,
@@ -61,17 +62,14 @@ define(function (require) {
         } else {
             return console;
         }
+
     })();
+
     ConsoleAppender.prototype.write = function(logItem) {
+
         var f = this.console.log;
+
         switch (logItem.level.toString()) {
-            case "TRACE":
-                f = this.console.trace;
-                break;
-            case "DEBUG":
-            case "INFO":
-                f = this.console.info;
-                break;
             case "WARN":
                 f = this.console.warn;
                 break;
@@ -81,6 +79,7 @@ define(function (require) {
         }
 
         f.apply(this.console, logItem.toArray());
+
     };
 
     return ConsoleAppender;
