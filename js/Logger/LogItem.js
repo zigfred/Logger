@@ -28,6 +28,28 @@
 define(function (require) {
     "use strict";
 
+    function formatTime(date) {
+        var timeString,
+            h = date.getHours().toString(),
+            m = date.getMinutes().toString(),
+            s = date.getSeconds().toString(),
+            ms = date.getMilliseconds();
+
+        if (h.length == 1) {
+            h = "0" + h;
+        }
+        if (m.length == 1) {
+            m = "0" + m;
+        }
+        if (s.length == 1) {
+            s = "0" + s;
+        }
+
+        timeString = h + ":" + m + ":" + s + "." + ms;
+
+        return timeString;
+    }
+
     function LogItem(options) {
         for (var i in options) {
             if (options.hasOwnProperty(i)) {
@@ -38,7 +60,7 @@ define(function (require) {
 
     LogItem.prototype.toArray = function() {
         var logParams = [];
-        logParams.push(this.time.toLocaleTimeString());
+        logParams.push(formatTime(this.time));
         logParams.push(this.id);
         logParams.push("[" + this.level.toString() + "] -");
         logParams = logParams.concat(this.args);
