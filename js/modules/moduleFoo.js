@@ -19,6 +19,7 @@ define(function(require) {
     function start() {
 
         log.info("Initialized");
+        log.debug("ajax function makeAjaxRequest: ", makeAjaxRequest);
 
         try {
             //do some stuff
