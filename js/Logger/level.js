@@ -33,8 +33,8 @@ define(function (require) {
         this.name = name;
     }
 
-    Level.prototype.isGreaterOrEqual = function(logItemLevel) {
-        return this.level >= logItemLevel.level;
+    Level.prototype.isGreaterOrEqual = function(globalLevel) {
+        return this.level >= globalLevel.level;
     };
     Level.prototype.toString = function() {
         return this.name;
@@ -42,12 +42,11 @@ define(function (require) {
     Level.getLevel = function(level) {
         return Level[level.toUpperCase()];
     };
-    Level["ALL"] = new Level(Number.MIN_VALUE, "ALL");
+
     Level["DEBUG"] = new Level(100, "DEBUG");
     Level["INFO"] = new Level(200, "INFO");
     Level["WARN"] = new Level(300, "WARN");
     Level["ERROR"] = new Level(400, "ERROR");
-    Level["OFF"] = new Level(Number.MAX_VALUE, "OFF");
 
     return Level;
 });
