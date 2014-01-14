@@ -13,10 +13,12 @@ define(function(require) {
         Logger.enable("debug");
 
         log.info("Initialized");
+        log.info(document);
+
         try {
             //do some stuff
             log.debug("try to execute...");
-            log.qwe()
+            log.qwe();
             //do some stuff
             log.warn("should not execute!!!");
         } catch (e) {
