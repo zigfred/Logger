@@ -53,6 +53,13 @@ define(function (require) {
     function LogItem(options) {
         for (var i in options) {
             if (options.hasOwnProperty(i)) {
+                if (i === "args") {
+                    for (var k = 0, l = options[i].length; k < l; k++) {
+                        if (options[i][k] instanceof Error) {
+                            options[i][k] = options[i][k].message;
+                        }
+                    }
+                }
                 this[i] = options[i];
             }
         }
