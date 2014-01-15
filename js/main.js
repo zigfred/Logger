@@ -3,7 +3,7 @@ requirejs.config({
     paths: {
         "underscore": "libs/underscore-min",
         "QUnit": "libs/qunit-1.12.0",
-        "logger": "Logger/logger",
+        "logger": "common/logging/logger",
         "jasmine": "libs/jasmine",
         "jasmine-html": "libs/jasmine-html"
     },
@@ -31,7 +31,7 @@ require([
     "tests/index", "modules/moduleFoo", "modules/moduleBar"
 ], function(test, moduleFoo, moduleBar) {
 
-        test.start();
+        //test.start();
 
         moduleFoo.start();
         moduleBar.start();
