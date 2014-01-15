@@ -46,9 +46,9 @@ define(function(require) {
         if (stack) {
             var lineAccessingLogger = stack.split("\n")[3];
             var res = lineAccessingLogger.match(/\/(\w+\.\w+):(\d+)/i);
-            if (!res) {
-                logItem.file = "unknown";
-                logItem.line = "0";
+            if (res) {
+                logItem.file = res[1];
+                logItem.line = res[2];
             }
         }
         if (!logItem.file) {
