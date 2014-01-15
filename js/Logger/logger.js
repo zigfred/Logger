@@ -85,9 +85,13 @@ define(function (require, exports, module) {
         disable: function() {
             this._enabled = false;
         },
-        // TODO set level and add method setLevel
-        enable: function() {
+        enable: function(level) {
+            if (level) this._level = Level.getLevel(level);
             this._enabled = true;
+        },
+        setLevel: function(level) {
+            this._level = (typeof level === "string") ?
+                Level.getLevel(level) : Level.getLevel("error");
         },
         _appendLogItem: function(logItem) {
 
