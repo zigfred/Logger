@@ -21,8 +21,8 @@
 
 
 /**
- * @author: psavushchik
- * @version: 0
+ * @author: Pavel Savushchyk
+ * @version: $Id$
  */
 
 define(function (require) {
