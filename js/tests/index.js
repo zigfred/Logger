@@ -4,7 +4,7 @@ define([
 ], function(jasmine, jasmine_html){
 
     var specs = [];
-    specs.push('tests/test1');
+    specs.push('tests/loggerTests');
 
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.updateInterval = 1000;
