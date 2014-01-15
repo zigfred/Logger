@@ -71,10 +71,8 @@ define(function (require, exports, module) {
                 Level.getLevel(level) : Level.getLevel("error");
         },
         _processLogItem: function(logItem) {
-            if (this._appenders.hasOwnProperty(i)) {
-                if (this._enabled && logItem.level.isGreaterOrEqual(this._level)) {
-                    this._appendLogItem(logItem);
-                }
+            if (this._enabled && logItem.level.isGreaterOrEqual(this._level)) {
+                this._appendLogItem(logItem);
             }
         },
         _appendLogItem: function(logItem) {
