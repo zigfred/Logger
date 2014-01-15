@@ -40,11 +40,20 @@ define(function(require) {
         logItem.args = Array.prototype.slice.call(logItem.args, 0);
         logItem.time = new Date();
 
+        // TODO cross browser support
         var stack = new Error().stack;
-        var lineAccessingLogger = stack.split("\n")[3];
-        var res = lineAccessingLogger.match(/\/(\w+\.\w+):(\d+)/i);
-        logItem.file = res[1];
-        logItem.line = res[2];
+        if (stack) {
+            var lineAccessingLogger = stack.split("\n")[3];
+            var res = lineAccessingLogger.match(/\/(\w+\.\w+):(\d+)/i);
+            if (!res) {
+                logItem.file = "unknown";
+                logItem.line = "0";
+            }
+        }
+        if (!logItem.file) {
+            logItem.file = "unknown";
+            logItem.line = "0";
+        }
 
         this._callback(new LogItem(logItem));
     };
