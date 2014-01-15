@@ -58,7 +58,7 @@ define(function (require, exports, module) {
 
     var config = module.config();
 
-    var Logger = {
+    return {
         enabled: (typeof config.enabled === "boolean") ? config.enabled : false,
         level: (typeof config.level === "string") ?
                 Level.getLevel(config.level) : Level.getLevel("error"),
@@ -107,7 +107,5 @@ define(function (require, exports, module) {
 
         }
     };
-    window.Logger = Logger;
-    return Logger;
 
 });
