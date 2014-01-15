@@ -28,11 +28,12 @@
 define(function (require, exports, module) {
     "use strict";
 
-    var Log = require("Logger/log"),
+    var _ = require("underscore"),
+        Log = require("Logger/log"),
         Level = require("Logger/level"),
         ConsoleAppender = require("Logger/appenders/console"),
         config = module.config();
-
+console.log(_)
     return {
         _enabled: (typeof config.enabled === "boolean") ? config.enabled : false,
         _level: (typeof config.level === "string") ?
@@ -55,7 +56,7 @@ define(function (require, exports, module) {
             if (this.loggers.hasOwnProperty(settings.id)) {
                 return this._loggers[settings.id];
             } else {
-                return this._loggers[settings.id] = new Log(settings, this._appendLogItem.bind(this));
+                return this._loggers[settings.id] = new Log(settings, _.bind(this._appendLogItem, this))
             }
         },
         disable: function() {
