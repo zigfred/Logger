@@ -5,7 +5,9 @@ requirejs.config({
         "QUnit": "libs/qunit-1.12.0",
         "logger": "Logger/logger",
         "jasmine": "libs/jasmine",
-        "jasmine-html": "libs/jasmine-html"
+        "jasmine-html": "libs/jasmine-html",
+        "jasmine-sinon": "libs/jasmine-sinon",
+        "sinon": "libs/sinon-1.7.3"
     },
     shim: {
         "jasmine": {
@@ -31,7 +33,7 @@ require([
     "tests/index", "modules/moduleFoo", "modules/moduleBar"
 ], function(test, moduleFoo, moduleBar) {
 
-        test.start();
+        //test.start();
 
         moduleFoo.start();
         moduleBar.start();
