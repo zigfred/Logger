@@ -54,17 +54,15 @@ define(function (require, exports, module) {
 
     var Log = require("Logger/log"),
         Level = require("Logger/level"),
-        ConsoleAppender = require("Logger/appenders/console");
-
-    var config = module.config();
+        ConsoleAppender = require("Logger/appenders/console"),
+        config = module.config();
 
     return {
-        enabled: (typeof config.enabled === "boolean") ? config.enabled : false,
-        level: (typeof config.level === "string") ?
+        _enabled: (typeof config.enabled === "boolean") ? config.enabled : false,
+        _level: (typeof config.level === "string") ?
                 Level.getLevel(config.level) : Level.getLevel("error"),
-        loggers: {},
-        logList: [],
-        appenders: {
+        _loggers: {},
+        _appenders: {
             console: new ConsoleAppender()
         },
         register: function(options) {
@@ -79,28 +77,24 @@ define(function (require, exports, module) {
             }
 
             if (this.loggers.hasOwnProperty(settings.id)) {
-                return this.loggers[settings.id];
+                return this._loggers[settings.id];
             } else {
-                return this.loggers[settings.id] = new Log(settings, this.addLogItem.bind(this));
+                return this._loggers[settings.id] = new Log(settings, this._appendLogItem.bind(this));
             }
         },
         disable: function() {
-            this.enabled = false;
+            this._enabled = false;
         },
+        // TODO set level and add method setLevel
         enable: function() {
-            this.enabled = true;
+            this._enabled = true;
         },
-        addLogItem: function(logItem) {
-            this.logList.push(logItem);
+        _appendLogItem: function(logItem) {
 
-            this.appendLogItem(logItem);
-        },
-        appendLogItem: function(logItem) {
-
-            for (var i in this.appenders) {
-                if (this.appenders.hasOwnProperty(i)) {
-                    if (this.enabled && logItem.level.isGreaterOrEqual(this.level)) {
-                        this.appenders[i].write(logItem);
+            for (var i in this._appenders) {
+                if (this._appenders.hasOwnProperty(i)) {
+                    if (this._enabled && logItem.level.isGreaterOrEqual(this._level)) {
+                        this._appenders[i].write(logItem);
                     }
                 }
             }
