@@ -56,7 +56,7 @@ define(function (require, exports, module) {
             if (this._loggers.hasOwnProperty(settings.id)) {
                 return this._loggers[settings.id];
             } else {
-                return this._loggers[settings.id] = new Log(settings, _.bind(this._appendLogItem, this))
+                return this._loggers[settings.id] = new Log(settings, _.bind(this._processLogItem, this))
             }
         },
         disable: function() {
@@ -70,16 +70,19 @@ define(function (require, exports, module) {
             this._level = (typeof level === "string") ?
                 Level.getLevel(level) : Level.getLevel("error");
         },
-        _appendLogItem: function(logItem) {
-
-            for (var i in this._appenders) {
-                if (this._appenders.hasOwnProperty(i)) {
-                    if (this._enabled && logItem.level.isGreaterOrEqual(this._level)) {
-                        this._appenders[i].write(logItem);
-                    }
+        _processLogItem: function(logItem) {
+            if (this._appenders.hasOwnProperty(i)) {
+                if (this._enabled && logItem.level.isGreaterOrEqual(this._level)) {
+                    this._appendLogItem(logItem);
                 }
             }
-
+        },
+        _appendLogItem: function(logItem) {
+            for (var i in this._appenders) {
+                if (this._appenders.hasOwnProperty(i)) {
+                    this._appenders[i].write(logItem);
+                }
+            }
         }
     };
 
