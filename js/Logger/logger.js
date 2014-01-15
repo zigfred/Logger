@@ -33,7 +33,7 @@ define(function (require, exports, module) {
         Level = require("Logger/level"),
         ConsoleAppender = require("Logger/appenders/console"),
         config = module.config();
-console.log(_)
+
     return {
         _enabled: (typeof config.enabled === "boolean") ? config.enabled : false,
         _level: (typeof config.level === "string") ?
