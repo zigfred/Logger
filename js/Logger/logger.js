@@ -53,7 +53,7 @@ console.log(_)
                 settings.id = options.id;
             }
 
-            if (this.loggers.hasOwnProperty(settings.id)) {
+            if (this._loggers.hasOwnProperty(settings.id)) {
                 return this._loggers[settings.id];
             } else {
                 return this._loggers[settings.id] = new Log(settings, _.bind(this._appendLogItem, this))
