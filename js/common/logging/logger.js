@@ -29,9 +29,9 @@ define(function (require, exports, module) {
     "use strict";
 
     var _ = require("underscore"),
-        Log = require("common/logging/log"),
-        Level = require("common/logging/level"),
-        ConsoleAppender = require("common/logging/appenders/console"),
+        Log = require("common/logging/Log"),
+        Level = require("common/logging/Level"),
+        ConsoleAppender = require("common/logging/appenders/ConsoleAppender"),
         config = module.config();
 
     return {
