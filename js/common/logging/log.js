@@ -28,8 +28,8 @@
 define(function(require) {
     "use strict";
 
-    var Level = require("common/logging/level"),
-        LogItem = require("common/logging/logItem");
+    var Level = require("common/logging/Level"),
+        LogItem = require("common/logging/LogItem");
 
     function Log(settings, callback) {
         this._id = settings.id;
