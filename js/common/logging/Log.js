@@ -56,34 +56,37 @@ define(function(require) {
             logItem.line = "0";
         }
 
-        this._callback(new LogItem(logItem));
+        logItem = new LogItem(logItem);
+
+        this._callback(logItem);
+        return logItem;
     };
     Log.prototype.log = function() {
-        this._prepareLogItem({
+        return this._prepareLogItem({
             level: Level.getLevel("info"),
             args: arguments
         });
     };
     Log.prototype.info = function() {
-        this._prepareLogItem({
+        return this._prepareLogItem({
             level: Level.getLevel("info"),
             args: arguments
         });
     };
     Log.prototype.debug = function() {
-        this._prepareLogItem({
+        return this._prepareLogItem({
             level: Level.getLevel("debug"),
             args: arguments
         });
     };
     Log.prototype.warn = function() {
-        this._prepareLogItem({
+        return this._prepareLogItem({
             level: Level.getLevel("warn"),
             args: arguments
         });
     };
     Log.prototype.error = function() {
-        this._prepareLogItem({
+        return this._prepareLogItem({
             level: Level.getLevel("error"),
             args: arguments
         });
