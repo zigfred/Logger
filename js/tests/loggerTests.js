@@ -82,6 +82,9 @@ define(function(require) {
                 logger.setLevel("debug");
                 logSpy = sinon.spy(logger, "_appendLogItem");
             });
+            afterEach(function(){
+                logSpy.restore();
+            });
 
             it("should disable logging",function() {
                 logger.disable();
@@ -125,6 +128,9 @@ define(function(require) {
             beforeEach(function() {
                 logger.setLevel("debug");
                 logSpy = sinon.spy(logger, "_appendLogItem");
+            });
+            afterEach(function(){
+                logSpy.restore();
             });
 
             // logger level: error
