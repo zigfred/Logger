@@ -2,7 +2,6 @@ requirejs.config({
     baseUrl: "js",
     paths: {
         "underscore": "libs/underscore-min",
-        "QUnit": "libs/qunit-1.12.0",
         "logger": "common/logging/logger",
         "jasmine": "libs/jasmine",
         "jasmine-html": "libs/jasmine-html"
