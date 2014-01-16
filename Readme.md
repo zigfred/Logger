@@ -92,7 +92,7 @@ error
 
 
 # Usage
-examples: [https://github.com/zigfred/Logger/modules](https://github.com/zigfred/Logger/modules)
+examples: [https://github.com/zigfred/Logger/tree/master/js/modules](https://github.com/zigfred/Logger/tree/master/js/modules)
 ## Case 1. Debugging
 
 `config.js`
