@@ -30,7 +30,7 @@ define(function(require) {
 
     describe("Logging", function() {
 
-        it("loaded", function() {
+        it("has exists", function() {
             expect(logger).toBeDefined();
         });
         it("has register method",function() {
