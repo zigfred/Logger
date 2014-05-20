@@ -1,7 +1,8 @@
 define([
     "jasmine",
-    "jasmine-html"
-], function(jasmine, jasmine_html){
+    "jasmine-html",
+    "jasmine-sinon"
+], function(jasmine, jasmine_html, sinon){
 
     var specs = [];
     specs.push('tests/loggerTests');

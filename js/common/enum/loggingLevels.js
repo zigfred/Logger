@@ -25,14 +25,18 @@
  * @version: $Id$
  */
 
-define(function (require, exports, module) {
-    "use strict";
-
-    var LoggerManager = require("common/logging/LoggerManager"),
-        config = module.config();
-
-    var logger = new LoggerManager(config);
-
-    return logger;
-
-});
+(function (factory, global) {
+    if (typeof define === "function" && define.amd) {
+        define([], factory);
+    } else {
+        global.logging || (global.logging = {});
+        global.logging.loggingLevels = factory();
+    }
+}(function () {
+    return {
+        DEBUG: 100,
+        INFO:  200,
+        WARN:  300,
+        ERROR: 400
+    };
+}, this));

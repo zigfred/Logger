@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2005 - 2014 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com.
  *
  * Unless you have purchased  a commercial license agreement from Jaspersoft,
@@ -25,16 +25,23 @@
  * @version: $Id$
  */
 
-define(function (require) {
-    "use strict";
+(function (factory, global) {
+    if (typeof define === "function" && define.amd) {
+        define(["common/enum/loggingLevels"], factory);
+    } else {
+        global.logging || (global.logging = {});
+        global.logging.Level = factory(global.logging.loggingLevels);
+    }
+}(function (levels) {
 
     function Level(level, name) {
         this.level = level;
-        this.name = name;
+        this.name = name.toUpperCase();
     }
 
     Level.prototype.isGreaterOrEqual = function(globalLevel) {
-        return this.level >= globalLevel.level;
+        var levelNumber = (globalLevel instanceof Level ? globalLevel : Level.getLevel(globalLevel) ).level;
+        return this.level >= levelNumber;
     };
     Level.prototype.toString = function() {
         return this.name;
@@ -43,10 +50,11 @@ define(function (require) {
         return Level[level.toUpperCase()];
     };
 
-    Level["DEBUG"] = new Level(100, "DEBUG");
-    Level["INFO"] = new Level(200, "INFO");
-    Level["WARN"] = new Level(300, "WARN");
-    Level["ERROR"] = new Level(400, "ERROR");
+    for (var i in levels) {
+        if (levels.hasOwnProperty(i)) {
+            Level[i] = new Level(levels[i], i);
+        }
+    }
 
     return Level;
-});
+}, this));

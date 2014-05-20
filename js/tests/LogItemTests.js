@@ -71,9 +71,10 @@ define(function(require) {
             var arr = logItem.toArray();
 
             expect(arr instanceof Array).toBeTruthy();
-            expect(arr[1]).toEqual(options.id);
-            expect(arr[2]).toEqual("[" + options.level.toString() + "] -");
-            expect(arr.slice(3)).toEqual(options.args);
+            expect(arr[1]).toEqual("[" + options.id + "]");
+            expect(arr[2]).toEqual("[" + options.file + ":" + options.line + "]");
+            expect(arr[3]).toEqual("[" + options.level.toString() + "] -");
+            expect(arr.slice(4)).toEqual(options.args);
 
         });
 

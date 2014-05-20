@@ -1,16 +1,16 @@
 define(function(require) {
     "use strict";
 
-    var Logger = require("logger"),
+    var logger = require("logger"),
         module = require("module");
 
-    var log = Logger.register(module);
+    var log = logger.register(module);
 
     function start() {
 
-        Logger.disable();
+        logger.disable();
         log.warn('should not fire');
-        Logger.enable("debug");
+        logger.enable("debug");
 
         log.info("Initialized");
         log.info(document);

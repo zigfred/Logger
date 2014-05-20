@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2005 - 2014 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com.
  *
  * Unless you have purchased  a commercial license agreement from Jaspersoft,
@@ -25,11 +25,23 @@
  * @version: $Id$
  */
 
-define(function(require) {
-    "use strict";
+(function (factory, global) {
+    if (typeof define === "function" && define.amd) {
+        define(["common/logging/Level", "common/logging/LogItem"], factory);
+    } else {
+        global.logging || (global.logging = {});
+        global.logging.Log = factory(global.logging.Level, global.logging.LogItem);
+    }
+}(function(Level, LogItem) {
 
-    var Level = require("common/logging/Level"),
-        LogItem = require("common/logging/LogItem");
+    function createLogMethod(type) {
+        return function() {
+            return this._prepareLogItem({
+                level: Level.getLevel(type),
+                args: arguments
+            });
+        }
+    }
 
     function Log(settings, callback) {
         this._id = settings.id;
@@ -56,38 +68,16 @@ define(function(require) {
             logItem.line = "0";
         }
 
-        this._callback(new LogItem(logItem));
-    };
-    Log.prototype.log = function() {
-        this._prepareLogItem({
-            level: Level.getLevel("info"),
-            args: arguments
-        });
-    };
-    Log.prototype.info = function() {
-        this._prepareLogItem({
-            level: Level.getLevel("info"),
-            args: arguments
-        });
-    };
-    Log.prototype.debug = function() {
-        this._prepareLogItem({
-            level: Level.getLevel("debug"),
-            args: arguments
-        });
-    };
-    Log.prototype.warn = function() {
-        this._prepareLogItem({
-            level: Level.getLevel("warn"),
-            args: arguments
-        });
-    };
-    Log.prototype.error = function() {
-        this._prepareLogItem({
-            level: Level.getLevel("error"),
-            args: arguments
-        });
+        logItem = new LogItem(logItem);
+
+        this._callback(logItem);
+        return logItem;
     };
 
+    Log.prototype.debug = createLogMethod("debug");
+    Log.prototype.info = createLogMethod("info");
+    Log.prototype.warn = createLogMethod("warn");
+    Log.prototype.error = createLogMethod("error");
+
     return Log;
-});
+}, this));

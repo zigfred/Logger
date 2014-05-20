@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 - 2011 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2005 - 2014 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com.
  *
  * Unless you have purchased  a commercial license agreement from Jaspersoft,
@@ -43,7 +43,7 @@ define(function(require) {
             expect(typeof logger.disable).toBe("function");
         });
         it("has setLevel method",function() {
-            expect(typeof logger.disable).toBe("function");
+            expect(typeof logger.setLevel).toBe("function");
         });
 
         describe("register method", function() {

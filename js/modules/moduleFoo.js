@@ -1,11 +1,11 @@
 define(function(require) {
     "use strict";
 
-    var Logger = require("logger"),
+    var logger = require("logger"),
         module = require("module");
 
-    var log = Logger.register(module);
-    var logAjax = Logger.register("ajax");
+    var log = logger.register(module);
+    var logAjax = logger.register("ajax");
 
     function makeAjaxRequest(data){
         logAjax.debug("data to send", data);

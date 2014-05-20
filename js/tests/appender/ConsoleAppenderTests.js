@@ -25,9 +25,9 @@
  */
 
 define(function(require) {
-    "use strict"
+    "use strict";
 
-    var ConsoleAppender = require("common/logging/appenders/ConsoleAppender");
+    var ConsoleAppender = require("common/logging/appender/ConsoleAppender");
     var LogItem = require("common/logging/LogItem"),
         Level = require("common/logging/Level");
 
@@ -48,34 +48,36 @@ define(function(require) {
         });
 
         describe("ConsoleAppender instance", function(){
-            var consoleAppender = new ConsoleAppender();
-            var logItem = new LogItem({
-                id: "id",
-                level: Level.getLevel("info"),
-                time: new Date(),
-                file: "testFile.js",
-                line: 10,
-                args: ["msg"]
-            });
+            var consoleAppender = new ConsoleAppender(),
+                logItem = new LogItem({
+                    id: "id",
+                    level: Level.getLevel("info"),
+                    time: new Date(),
+                    file: "testFile.js",
+                    line: 10,
+                    args: ["msg"]
+                });
 
             it("has method write", function(){
                 expect(typeof consoleAppender.write).toEqual("function");
             });
 
-            it("should call console.log", function(){
-                var consoleLogSpy = sinon.spy(ConsoleAppender.prototype.console, "log");
+            it("should call console.debug", function(){
+                var consoleDebugSpy = sinon.spy(ConsoleAppender.prototype.console, "debug");
                 logItem.level = Level.getLevel("debug");
 
                 consoleAppender.write(logItem);
-                expect(consoleLogSpy).toHaveBeenCalled();
+                expect(consoleDebugSpy).toHaveBeenCalled();
+            });
 
-                consoleLogSpy.reset();
+            it("should call console.info", function(){
+                var consoleInfoSpy = sinon.spy(ConsoleAppender.prototype.console, "info");
                 logItem.level = Level.getLevel("info");
 
                 consoleAppender.write(logItem);
-                expect(consoleLogSpy).toHaveBeenCalled();
-
+                expect(consoleInfoSpy).toHaveBeenCalled();
             });
+
             it("should call console.warn", function(){
                 var consoleWarnSpy = sinon.spy(ConsoleAppender.prototype.console, "warn");
                 logItem.level = Level.getLevel("warn");
@@ -83,6 +85,7 @@ define(function(require) {
                 consoleAppender.write(logItem);
                 expect(consoleWarnSpy).toHaveBeenCalled();
             });
+
             it("should call console.error", function(){
                 var consoleErrorSpy = sinon.spy(ConsoleAppender.prototype.console, "error");
                 logItem.level = Level.getLevel("error");
