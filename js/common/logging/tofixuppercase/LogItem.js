@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 - 2013 Jaspersoft Corporation. All rights reserved.
+ * Copyright (C) 2005 - 2014 Jaspersoft Corporation. All rights reserved.
  * http://www.jaspersoft.com.
  *
  * Unless you have purchased  a commercial license agreement from Jaspersoft,
@@ -25,9 +25,16 @@
  * @version: $Id$
  */
 
-define(function (require) {
+(function (factory, global) {
+    if (typeof define === "function" && define.amd) {
+        define([], factory);
+    } else {
+        global.logging || (global.logging = {});
+        global.logging.LogItem = factory();
+    }
+}(function () {
     "use strict";
-
+    
     function formatTime(date) {
         var timeString,
             h = date.getHours().toString(),
@@ -68,7 +75,10 @@ define(function (require) {
     LogItem.prototype.toArray = function() {
         var logParams = [];
         logParams.push(formatTime(this.time));
-        logParams.push(this.id);
+        logParams.push("[" + this.id + "]");
+        if (this.file !== "unknown"){
+            logParams.push("[" + this.file + ":" + this.line + "]");
+        }
         logParams.push("[" + this.level.toString() + "] -");
         logParams = logParams.concat(this.args);
 
@@ -76,4 +86,4 @@ define(function (require) {
     };
 
     return LogItem;
-});
+}, this));
