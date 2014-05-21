@@ -51,9 +51,8 @@ define(function(require) {
             it("should be disabled", function(){
                 expect(logger.get("enabled")).toBeFalsy();
             });
-            xit("should create Level instance with error logging level", function(){
-                expect(logger.get("level") instanceof Level).toBeTruthy();
-                expect(logger.get("level").toString()).toBe("ERROR");
+            it("should create levels object with error root level", function(){
+                expect(logger.get("levels").root).toBe("error");
             });
             it("should create empty object for appenders", function(){
                 expect(logger.get("appenders")).toEqual({});
@@ -89,18 +88,32 @@ define(function(require) {
                 if (loggingLevels.hasOwnProperty(i)) {
 
                     (function(levelName){
-                        it("should set level to " + levelName, function(){
+                        it("should set root level from config to " + levelName, function(){
                             var options = {
-                                level: levelName.toLowerCase()
+                                levels: {
+                                    root: levelName.toLowerCase()
+                                }
                             };
                             var logger = new LoggerManager(options);
 
-                            expect(logger.get("level").toLowerCase()).toBe(levelName.toLowerCase());
+                            expect(logger.get("levels").root).toBe(levelName.toLowerCase());
                         });
                     })(i);
 
                 }
             }
+
+            // setLevel
+            it("should set log level for root", function(){
+                var logger = new LoggerManager();
+                logger.setLevel("warn");
+                expect(logger.get("levels").root).toBe("warn");
+            });
+            it("should set log level to tags", function(){
+                var logger = new LoggerManager();
+                logger.setLevel("warn", "foo");
+                expect(logger.get("levels").foo).toBe("warn");
+            });
 
             // appenders
             it("should add console appender instance", function(){
@@ -109,7 +122,7 @@ define(function(require) {
                 };
                 var logger = new LoggerManager(options);
 
-                expect(logger.get("appenderInstances").console instanceof ConsoleAppender).toBeTruthy();
+                expect(logger.get("_appenderInstances").console instanceof ConsoleAppender).toBeTruthy();
             });
 
         });

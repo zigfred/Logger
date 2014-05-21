@@ -51,6 +51,7 @@ define(function(require) {
             var consoleAppender = new ConsoleAppender(),
                 logItem = new LogItem({
                     id: "id",
+                    tags: ["id"],
                     level: Level.getLevel("info"),
                     time: new Date(),
                     file: "testFile.js",

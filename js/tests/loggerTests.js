@@ -51,6 +51,7 @@ define(function(require) {
             var log1 = logger.register("testString1");
             var log11 = logger.register("testString1");
             var log2 = logger.register({id:"testObject"});
+            var log1and2 = logger.register("testString1 testString2");
 
             it("should create log instance with string",function() {
                 expect(log1).toBeDefined();
@@ -71,15 +72,19 @@ define(function(require) {
                 expect(log2._id).toEqual("testObject");
             });
 
+            it("should create log instance with tags",function() {
+                expect(log1and2._id).toEqual("testString1 testString2");
+                expect(log1and2._tags).toEqual(["testString1", "testString2"]);
+            });
         });
 
-        describe("set level, enable and disable logging", function() {
+        describe("enable and disable logging", function() {
 
             var log = logger.register("testLog");
             var logSpy;
 
             beforeEach(function() {
-                logger.setLevel("debug");
+                logger.setLevel("info");
                 logSpy = sinon.spy(logger, "_appendLogItem");
             });
             afterEach(function(){
@@ -88,13 +93,13 @@ define(function(require) {
 
             it("should disable logging",function() {
                 logger.disable();
-                log.debug("msg");
+                log.info("msg");
                 expect(logSpy).not.toHaveBeenCalled();
             });
 
             it("should enable logging",function() {
                 logger.enable();
-                log.debug("msg");
+                log.info("msg");
                 expect(logSpy).toHaveBeenCalled();
             });
 
@@ -107,20 +112,11 @@ define(function(require) {
                 log.info("msg");
                 expect(logSpy).toHaveBeenCalled();
             });
-            it("should set level logging when enable logging",function() {
-                logger.enable("error");
-                logger.setLevel("info");
-
-                log.debug("msg");
-                expect(logSpy).not.toHaveBeenCalled();
-
-                log.info("msg");
-                expect(logSpy).toHaveBeenCalled();
-            });
 
         });
 
-        describe("log instance", function() {
+
+        describe("set root log level", function() {
 
             var log = logger.register("testLog");
             var logSpy;
@@ -238,6 +234,52 @@ define(function(require) {
             });
 
         });
+
+        describe("set levels for tags", function() {
+
+            var log = logger.register("tag1 tag2 tag3");
+            var logSpy;
+
+            beforeEach(function() {
+                logSpy = sinon.spy(logger, "_appendLogItem");
+            });
+            afterEach(function(){
+                logSpy.restore();
+            });
+
+            it("should use root level logging",function() {
+                logger.enable("error");
+                log.debug("msg");
+                expect(logSpy).not.toHaveBeenCalled();
+
+                log.error("msg");
+                expect(logSpy).toHaveBeenCalled();
+            });
+            it("should use tag1 log level",function() {
+                logger.enable("error");
+                logger.setLevel("info", "tag1");
+
+                log.debug("msg");
+                expect(logSpy).not.toHaveBeenCalled();
+
+                log.info("msg");
+                expect(logSpy).toHaveBeenCalled();
+            });
+            it("should use tag2 log level",function() {
+                logger.enable("error");
+                logger.setLevel("error", "tag1");
+
+                log.debug("msg");
+                expect(logSpy).not.toHaveBeenCalled();
+
+                logger.setLevel("info", "tag2");
+
+                log.info("msg");
+                expect(logSpy).toHaveBeenCalled();
+            });
+
+        });
+
     });
 
 });

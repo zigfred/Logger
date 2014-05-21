@@ -6,7 +6,11 @@ requirejs.config({
         "jasmine": "libs/jasmine",
         "jasmine-html": "libs/jasmine-html",
         "jasmine-sinon": "libs/jasmine-sinon",
-        "sinon": "libs/sinon-1.7.3"
+        "sinon": "libs/sinon-1.7.3",
+
+        "request": "modules/request",
+        "nav": "modules/nav",
+        "viewer": "modules/viewer"
     },
     shim: {
         "jasmine": {
@@ -14,31 +18,57 @@ requirejs.config({
         },
         "underscore": {
             exports: "_"
-        },
-        "jasmine-html": {
-            deps: ["jasmine"],
-            exports: "jasmine"
-        },
-        "jasmine-sinon": {
-            deps: ["jasmine", "sinon"],
-            exports: "jasmine"
         }
     },
     config: {
         logger: {
             enabled: true,
-            level: "debug",
+            levels: {
+                root: "error",
+                "request": "info",
+                "viewer": "debug"
+            },
             appenders: ["console"]
         }
     }
 });
 
 require([
-    "tests/index", "modules/moduleFoo", "modules/moduleBar"
-], function(test, moduleFoo, moduleBar) {
+    "nav",
+    "viewer",
+    "request",
+    "logger"
+],function(nav, viewer, request, logger) {
 
-        test.start();
+    var log = logger.register("app");
 
-        moduleFoo.start();
-        moduleBar.start();
+    log.info("app starting");
+
+    request.init("url");
+
+    viewer.init({navType: "top", width: 800});
+
+    nav.config(viewer.$navContainer, "top");
+
+    nav.on("action", function(action){
+        viewer.navAction(action);
+    });
+
+    viewer.show("home");
+
+    log.info("app started");
+
+
+    // fake user actions
+    setTimeout(function(){
+        log.info("user clicked link to page1");
+        nav.trigger("click", "page1");
+    }, 3000);
+
+    setTimeout(function(){
+        log.info("user clicked link to page2");
+        nav.trigger("click", "page2");
+    }, 6000);
+
+
 });

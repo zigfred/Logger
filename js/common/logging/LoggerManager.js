@@ -48,9 +48,11 @@
         defaults : function() {
             return {
                 enabled: false,
-                level: "error",
+                levels: {
+                    root: "error"
+                },
                 appenders: {},
-                appenderInstances: {},
+                _appenderInstances: {},
                 loggers: {}
             }
         },
@@ -63,7 +65,7 @@
             _.each(appenderConstructors, function(appender, name){
                 appenders[name] = new appender();
             });
-            this.set("appenderInstances", appenders);
+            this.set("_appenderInstances", appenders);
 
         },
 
@@ -75,46 +77,82 @@
             this.attributes[attr] = value;
         },
 
-        register: function(options) {
-            var settings = {
-                id: "root"
-            };
+        register: function(tags) {
+            var loggers = this.get("loggers");
 
-            if (typeof options === "string" && options !== "") {
-                settings.id = options;
-            } else if (options && options.hasOwnProperty("id")) {
-                settings.id = options.id;
+            if (_.isObject(tags)) {
+                tags = [tags.id];
             }
-
-            if (!this.get("loggers").hasOwnProperty(settings.id)) {
-                var loggers = this.get("loggers");
-                loggers[settings.id] = new Log(settings, _.bind(this._processLogItem, this));
-                this.set("loggers", loggers);
+            if (_.isUndefined(tags) || tags === "") {
+                tags = ["root"];
             }
+            if (typeof tags === "string" ) {
+                tags = tags.split(" ");
+            }
+            var id = tags.join(" ");
 
-            return this.get("loggers")[settings.id];
+            if (!loggers.hasOwnProperty(id)) {
+
+                loggers[id] = new Log(id, this);
+
+                //this.set("loggers", loggers);
+            }
+            return loggers[id];
         },
         disable: function() {
             this.set("enabled", false);
         },
         enable: function(level) {
             if (level) {
-                this.set("level", Level.getLevel(level));
+                this.setLevel(level);
             }
             this.set("enabled", true);
         },
-        setLevel: function(level) {
-            this.set("level", level);
+        setLevel: function(level, tags) {
+            if (typeof tags === "string") {
+                tags = tags.split(" ");
+            }
+            if (_.isUndefined(tags)) {
+                tags = ["root"];
+            }
+            var levels = this.get("levels");
+
+            _.each(tags, function(tag) {
+                levels[tag] = level;
+            });
         },
 
         _processLogItem: function(logItem) {
-            if (this.get("enabled") && logItem.level.isGreaterOrEqual(this.get("level"))) {
-                this._appendLogItem(logItem);
+            if (!this.get("enabled")) {
+                return;
             }
+
+            var levels = this.get("levels");
+
+            // check local levels
+            var tags = _.chain(levels)
+                .map(function(level, name){
+                    return _.contains(logItem.tags, name) && logItem.level.isGreaterOrEqual(level) && name;
+                })
+                .compact()
+                .value();
+
+            if (tags.length) {
+                logItem.tags = tags;
+                return this._appendLogItem(logItem);
+            }
+
+            // if root level ok
+            if (logItem.level.isGreaterOrEqual(levels.root)) {
+                logItem.tags = ["root"];
+                return this._appendLogItem(logItem);
+            }
+
+
         },
         _appendLogItem: function(logItem) {
             var appenders = this.get("appenders"),
-                appenderInstances = this.get("appenderInstances");
+                appenderInstances = this.get("_appenderInstances");
             for (var i in appenders) {
                 if (appenderInstances.hasOwnProperty(appenders[i])) {
                     appenderInstances[appenders[i]].write(logItem);

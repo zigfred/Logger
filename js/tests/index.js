@@ -5,6 +5,11 @@ define([
 ], function(jasmine, jasmine_html, sinon){
 
     var specs = [];
+    specs.push('tests/appender/ConsoleAppenderTests');
+    specs.push('tests/LevelTests');
+    specs.push('tests/LogItemTests');
+    specs.push('tests/LogTests');
+    specs.push('tests/LoggerManagerTests');
     specs.push('tests/loggerTests');
 
     var jasmineEnv = jasmine.getEnv();

@@ -75,7 +75,7 @@
     LogItem.prototype.toArray = function() {
         var logParams = [];
         logParams.push(formatTime(this.time));
-        logParams.push("[" + this.id + "]");
+        logParams.push("[" + this.tags.join(" ") + "]");
         if (this.file !== "unknown"){
             logParams.push("[" + this.file + ":" + this.line + "]");
         }

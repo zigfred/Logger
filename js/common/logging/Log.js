@@ -27,12 +27,12 @@
 
 (function (factory, global) {
     if (typeof define === "function" && define.amd) {
-        define(["common/logging/Level", "common/logging/LogItem"], factory);
+        define(["underscore", "common/logging/Level", "common/logging/LogItem"], factory);
     } else {
         global.logging || (global.logging = {});
-        global.logging.Log = factory(global.logging.Level, global.logging.LogItem);
+        global.logging.Log = factory(_, global.logging.Level, global.logging.LogItem);
     }
-}(function(Level, LogItem) {
+}(function(_, Level, LogItem) {
 
     function createLogMethod(type) {
         return function() {
@@ -43,41 +43,51 @@
         }
     }
 
-    function Log(settings, callback) {
-        this._id = settings.id;
-        this._callback = callback;
+    function Log(id, logger) {
+        this._id = id;
+        this._tags = id.split(" ");
+        this._logger = logger;
     }
 
-    Log.prototype._prepareLogItem = function(logItem) {
-        logItem.id = this._id;
-        logItem.args = Array.prototype.slice.call(logItem.args, 0);
-        logItem.time = new Date();
+    _.extend(Log.prototype, {
+        _prepareLogItem: function(logItem) {
+            logItem.id = this._id;
+            logItem.tags = this._tags || [];
+            logItem.args = Array.prototype.slice.call(logItem.args, 0);
+            logItem.time = new Date();
 
-        // TODO cross browser support
-        var stack = new Error().stack;
-        if (stack) {
-            var lineAccessingLogger = stack.split("\n")[3];
-            var res = lineAccessingLogger.match(/\/(\w+\.\w+):(\d+)/i);
-            if (res) {
-                logItem.file = res[1];
-                logItem.line = res[2];
+            // TODO cross browser support
+            var stack = new Error().stack;
+            if (stack) {
+                var lineAccessingLogger = stack.split("\n")[3];
+                var res = lineAccessingLogger.match(/\/(\w+\.\w+):(\d+)/i);
+                if (res) {
+                    logItem.file = res[1];
+                    logItem.line = res[2];
+                }
             }
-        }
-        if (!logItem.file) {
-            logItem.file = "unknown";
-            logItem.line = "0";
-        }
+            if (!logItem.file) {
+                logItem.file = "unknown";
+                logItem.line = "0";
+            }
 
-        logItem = new LogItem(logItem);
+            logItem = new LogItem(logItem);
 
-        this._callback(logItem);
-        return logItem;
-    };
+            this._logger._processLogItem(logItem);
+            return logItem;
+        },
+        setLevel: function(level, tags) {
+            tags = tags || this._tags;
+            this._logger.setLevel(level, tags);
+        },
 
-    Log.prototype.debug = createLogMethod("debug");
-    Log.prototype.info = createLogMethod("info");
-    Log.prototype.warn = createLogMethod("warn");
-    Log.prototype.error = createLogMethod("error");
+        debug: createLogMethod("debug"),
+        info: createLogMethod("info"),
+        warn: createLogMethod("warn"),
+        error: createLogMethod("error")
+    });
+
+
 
     return Log;
 }, this));
