@@ -22,13 +22,14 @@ requirejs.config({
     },
     config: {
         logger: {
-            enabled: true,
-            levels: {
-                root: "error",
+            root: {
+                level: "off",
+                appenders: ["console"]
+            },
+            modules: {
                 "request": "info",
                 "viewer": "debug"
-            },
-            appenders: ["console"]
+            }
         }
     }
 });
