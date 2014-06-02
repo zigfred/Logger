@@ -9,9 +9,14 @@ Inserts in requirejs config.
 requirejs.config({
     config: {
         logger: {
-            enabled: true,
-            level: "debug",
-            appenders: ["console"]
+            root: {
+                level: "off",
+                appenders: ["console"]
+            }
+            modules: {
+                "foo/*": "error",
+                "foo/bar": "debug"
+            }
         }
     }
 });
@@ -56,20 +61,11 @@ Create logItem object, add data such as time, cid, file, etc. Then forward it to
 Mediator, fabric.
 Global object for manage logs from console.
 
-#### properties
-* _enabled
-* _level
-* _loggers
-* _appenders
-
-
 #### methods
 * register
 * enable
 * disable
 * setLevel
-* _processLogItem
-* _appendLogItem
 
 
 
@@ -85,10 +81,12 @@ Browser console.
 
 ## Levels.
 
+all
 debug
 info
 warn
 error
+off
 
 
 # Usage
@@ -100,9 +98,13 @@ examples: [https://github.com/zigfred/Logger/tree/master/js/modules](https://git
 ```javascript
 config: {
     logger: {
-        enabled: true,
-        level: "debug",
-        appenders: ["console"]
+        root: {
+            level: "debug",
+            appenders: ["console"]
+        },
+        modules: {
+            "folder/moduleFoo": "debug"
+        }
     }
 }
 ```
@@ -127,7 +129,6 @@ define(['module', 'logger'], function(module, logger) {
         log.info("Finish");
     }
 
-    return {start: start};
 });
 ```
 
