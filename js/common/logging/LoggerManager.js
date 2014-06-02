@@ -28,138 +28,132 @@
 
 (function (factory, global, _) {
     if (typeof define === "function" && define.amd) {
-        define(["underscore", "common/logging/Log", "common/logging/Level", "common/logging/appender/ConsoleAppender"], factory);
+        define([ "common/logging/Log", "common/logging/Level", "common/logging/appender/ConsoleAppender"], factory);
     } else {
         global.logging || (global.logging = {});
-        global.logging.LoggerManager = factory(_, global.logging.Log, global.logging.Level, global.logging.appender.ConsoleAppender);
+        global.logging.LoggerManager = factory(global.logging.Log, global.logging.Level, global.logging.appender.ConsoleAppender);
     }
-}(function (_, Log, Level, ConsoleAppender) {
+}(function (Log, Level, ConsoleAppender) {
 
     var appenderConstructors = {
-            console: ConsoleAppender
-        };
-
-    var LoggerManager = function(options) {
-        this.initialize(options || {});
+        console: ConsoleAppender
     };
 
-    _.extend(LoggerManager.prototype, {
+    var LoggerManager = function(options) {
+        this._initialize(options || {});
+    };
 
-        defaults : function() {
-            return {
-                enabled: false,
-                levels: {
-                    root: "error"
-                },
-                appenders: {},
-                _appenderInstances: {},
-                loggers: {}
+    LoggerManager.prototype._defaults = function() {
+        return {
+            root: {
+                level: "off",
+                appenders: ["console"]
+            },
+            modules: {}
+        }
+    };
+    LoggerManager.prototype._initialize = function(options) {
+        this._loggers = {};
+        this.config = defaults(options, this._defaults());
+
+        // initialize appenders
+        var appenders = {};
+        for (var i in appenderConstructors) {
+            if (appenderConstructors.hasOwnProperty(i)) {
+                appenders[i] = new appenderConstructors[i]();
             }
-        },
+        }
+        this._appenderInstances = appenders;
+    };
 
-        initialize: function(options) {
-            this.attributes = _.defaults(options, this.defaults());
+    LoggerManager.prototype.register = function(module) {
+        var id = "root";
 
-            // initialize appenders
-            var appenders = {};
-            _.each(appenderConstructors, function(appender, name){
-                appenders[name] = new appender();
+        if (typeof module === "string" && module !== "") {
+            id = module;
+        } else if (module && module.hasOwnProperty("id")) {
+            id = module.id;
+        }
+        if (!this._loggers.hasOwnProperty(id)) {
+            this._loggers[id] = new Log(id, {
+                processLogItem: LoggerManager.prototype.processLogItem.bind(this),
+                setLevel:  LoggerManager.prototype.setLevel.bind(this)
             });
-            this.set("_appenderInstances", appenders);
+        }
 
-        },
+        return this._loggers[id];
+    };
+    LoggerManager.prototype.disable = function(path) {
+        path || (path = "root");
+        this.setLevel("off", path);
+    };
+    LoggerManager.prototype.enable = function(path, level) {
+        level || (level = "all");
+        this.setLevel(level, path);
+    };
+    LoggerManager.prototype.setLevel = function(level, path) {
+        level || (level = "off");
+        if (!path || path === "root") {
+            this.config.root.level = level;
+        } else {
+            this.config.modules[path] = level;
+        }
+    };
+    LoggerManager.prototype.processLogItem = function(logItem) {
+        var masks = _collectPathConfigs(logItem.id, this.config.modules);
 
-        get: function(attr) {
-            return this.attributes[attr];
-        },
-
-        set: function(attr, value) {
-            this.attributes[attr] = value;
-        },
-
-        register: function(tags) {
-            var loggers = this.get("loggers");
-
-            if (_.isObject(tags)) {
-                tags = [tags.id];
+        if ((logItem.id === "root" || !masks.length) && logItem.level.isGreaterOrEqual(this.config.root.level)) {
+            return this._appendLogItem(logItem);
+        } else if (logItem.level.isGreaterOrEqual(this.config.modules[masks.shift()])) {
+            return this._appendLogItem(logItem);
+        } else {
+            return false;
+        }
+    };
+    LoggerManager.prototype._appendLogItem = function(logItem) {
+        for (var i in this._appenderInstances) {
+            if (this._appenderInstances.hasOwnProperty(i)) {
+                this._appenderInstances[i].write(logItem);
             }
-            if (_.isUndefined(tags) || tags === "") {
-                tags = ["root"];
-            }
-            if (typeof tags === "string" ) {
-                tags = tags.split(" ");
-            }
-            var id = tags.join(" ");
+        }
+    };
 
-            if (!loggers.hasOwnProperty(id)) {
+    return LoggerManager;
 
-                loggers[id] = new Log(id, this);
+    function _collectPathConfigs(path, patterns) {
+        if (path === "root") {
+            return ["root"];
+        }
+        var masks = [];
 
-                //this.set("loggers", loggers);
-            }
-            return loggers[id];
-        },
-        disable: function() {
-            this.set("enabled", false);
-        },
-        enable: function(level) {
-            if (level) {
-                this.setLevel(level);
-            }
-            this.set("enabled", true);
-        },
-        setLevel: function(level, tags) {
-            if (typeof tags === "string") {
-                tags = tags.split(" ");
-            }
-            if (_.isUndefined(tags)) {
-                tags = ["root"];
-            }
-            var levels = this.get("levels");
-
-            _.each(tags, function(tag) {
-                levels[tag] = level;
-            });
-        },
-
-        _processLogItem: function(logItem) {
-            if (!this.get("enabled")) {
-                return;
-            }
-
-            var levels = this.get("levels");
-
-            // check local levels
-            var tags = _.chain(levels)
-                .map(function(level, name){
-                    return _.contains(logItem.tags, name) && logItem.level.isGreaterOrEqual(level) && name;
-                })
-                .compact()
-                .value();
-
-            if (tags.length) {
-                logItem.tags = tags;
-                return this._appendLogItem(logItem);
-            }
-
-            // if root level ok
-            if (logItem.level.isGreaterOrEqual(levels.root)) {
-                logItem.tags = ["root"];
-                return this._appendLogItem(logItem);
-            }
-
-
-        },
-        _appendLogItem: function(logItem) {
-            var appenders = this.get("appenders"),
-                appenderInstances = this.get("_appenderInstances");
-            for (var i in appenders) {
-                if (appenderInstances.hasOwnProperty(appenders[i])) {
-                    appenderInstances[appenders[i]].write(logItem);
+        for (var mask in patterns) {
+            if (patterns.hasOwnProperty(mask)) {
+                if (path.match(new RegExp("^" + mask))) {
+                    masks.push(mask);
                 }
             }
         }
-    });
 
-    return LoggerManager;
+        masks.sort().reverse();
+
+        return masks;
+    }
+
+    function defaults(object) {
+        if (!object) {
+            return object;
+        }
+        for (var argsIndex = 1, argsLength = arguments.length; argsIndex < argsLength; argsIndex++) {
+            var iterable = arguments[argsIndex];
+            if (iterable) {
+                for (var key in iterable) {
+                    if (object[key] == null) {
+                        object[key] = iterable[key];
+                    }
+                }
+            }
+        }
+        return object;
+    }
+
 }, this, this._));

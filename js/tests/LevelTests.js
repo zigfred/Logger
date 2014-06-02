@@ -41,6 +41,12 @@ define(function(require) {
             expect(levelName).toEqual("INFO");
         });
 
+        it("should return all level instance", function() {
+            var level = Level.getLevel("all");
+            expect(level.level).toEqual(0);
+            expect(level.name).toEqual("ALL");
+        });
+
         it("should return debug level instance", function() {
             var level = Level.getLevel("debug");
             expect(level.level).toEqual(100);
@@ -65,38 +71,70 @@ define(function(require) {
             expect(level.name).toEqual("ERROR");
         });
 
+        it("should return off level instance", function() {
+            var level = Level.getLevel("off");
+            expect(level.level).toEqual(1000);
+            expect(level.name).toEqual("OFF");
+        });
+
         describe("comparison levels", function(){
 
             var levels = {
+                all: Level.getLevel("all"),
                 debug: Level.getLevel("debug"),
                 info: Level.getLevel("info"),
                 warn: Level.getLevel("warn"),
-                error: Level.getLevel("error")
+                error: Level.getLevel("error"),
+                off: Level.getLevel("off")
             };
 
-            it("should error level be greater than all", function() {
+            it("should off level be greater than all levels", function() {
+                expect(levels.off.isGreaterOrEqual(levels.all)).toBeTruthy();
+                expect(levels.off.isGreaterOrEqual(levels.debug)).toBeTruthy();
+                expect(levels.off.isGreaterOrEqual(levels.info)).toBeTruthy();
+                expect(levels.off.isGreaterOrEqual(levels.warn)).toBeTruthy();
+                expect(levels.off.isGreaterOrEqual(levels.error)).toBeTruthy();
+                expect(levels.off.isGreaterOrEqual(levels.off)).toBeTruthy();
+            });
+            it("should error level be greater than off", function() {
+                expect(levels.error.isGreaterOrEqual(levels.all)).toBeTruthy();
                 expect(levels.error.isGreaterOrEqual(levels.debug)).toBeTruthy();
                 expect(levels.error.isGreaterOrEqual(levels.info)).toBeTruthy();
                 expect(levels.error.isGreaterOrEqual(levels.warn)).toBeTruthy();
                 expect(levels.error.isGreaterOrEqual(levels.error)).toBeTruthy();
+                expect(levels.error.isGreaterOrEqual(levels.off)).toBeFalsy();
             });
             it("should warn level be greater than all except error", function() {
+                expect(levels.warn.isGreaterOrEqual(levels.all)).toBeTruthy();
                 expect(levels.warn.isGreaterOrEqual(levels.debug)).toBeTruthy();
                 expect(levels.warn.isGreaterOrEqual(levels.info)).toBeTruthy();
                 expect(levels.warn.isGreaterOrEqual(levels.warn)).toBeTruthy();
                 expect(levels.warn.isGreaterOrEqual(levels.error)).toBeFalsy();
+                expect(levels.warn.isGreaterOrEqual(levels.off)).toBeFalsy();
             });
-            it("should info level be greater than debug and info, but lesser than warn and error", function() {
+            it("should info level be greater than debug, info and all, but lesser than warn and error", function() {
+                expect(levels.info.isGreaterOrEqual(levels.all)).toBeTruthy();
                 expect(levels.info.isGreaterOrEqual(levels.debug)).toBeTruthy();
                 expect(levels.info.isGreaterOrEqual(levels.info)).toBeTruthy();
                 expect(levels.info.isGreaterOrEqual(levels.warn)).toBeFalsy();
                 expect(levels.info.isGreaterOrEqual(levels.error)).toBeFalsy();
+                expect(levels.info.isGreaterOrEqual(levels.off)).toBeFalsy();
             });
-            it("should error level be lesser than exept debug", function() {
+            it("should error level be lesser than except debug and all", function() {
+                expect(levels.debug.isGreaterOrEqual(levels.all)).toBeTruthy();
                 expect(levels.debug.isGreaterOrEqual(levels.debug)).toBeTruthy();
                 expect(levels.debug.isGreaterOrEqual(levels.info)).toBeFalsy();
                 expect(levels.debug.isGreaterOrEqual(levels.warn)).toBeFalsy();
                 expect(levels.debug.isGreaterOrEqual(levels.error)).toBeFalsy();
+                expect(levels.debug.isGreaterOrEqual(levels.off)).toBeFalsy();
+            });
+            it("should all level be greater than all", function() {
+                expect(levels.all.isGreaterOrEqual(levels.all)).toBeTruthy();
+                expect(levels.all.isGreaterOrEqual(levels.debug)).toBeFalsy();
+                expect(levels.all.isGreaterOrEqual(levels.info)).toBeFalsy();
+                expect(levels.all.isGreaterOrEqual(levels.warn)).toBeFalsy();
+                expect(levels.all.isGreaterOrEqual(levels.error)).toBeFalsy();
+                expect(levels.all.isGreaterOrEqual(levels.off)).toBeFalsy();
             });
 
         });

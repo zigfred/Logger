@@ -34,9 +34,11 @@
     }
 }(function () {
     return {
+        ALL:   0,
         DEBUG: 100,
         INFO:  200,
         WARN:  300,
-        ERROR: 400
+        ERROR: 400,
+        OFF:   1000
     };
 }, this));

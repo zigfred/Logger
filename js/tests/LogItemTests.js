@@ -39,8 +39,7 @@ define(function(require) {
 
         it("should return logItem instance", function(){
             var options = {
-                id: "id tag",
-                tags: ["id", "tag"],
+                id: "id",
                 level: Level.getLevel("warn"),
                 time: new Date(),
                 file: "testFile.js",
@@ -52,7 +51,6 @@ define(function(require) {
 
             expect(logItem instanceof LogItem).toBeTruthy();
             expect(logItem.id).toEqual(options.id);
-            expect(logItem.tags).toEqual(options.tags);
             expect(logItem.level).toEqual(options.level);
             expect(logItem.time).toEqual(options.time);
             expect(logItem.file).toEqual(options.file);
@@ -62,7 +60,6 @@ define(function(require) {
         it("should return array of properties", function(){
             var options = {
                 id: "id",
-                tags: ["id", "tag"],
                 level: Level.getLevel("warn"),
                 time: new Date(),
                 file: "testFile.js",
@@ -74,7 +71,7 @@ define(function(require) {
             var arr = logItem.toArray();
 
             expect(arr instanceof Array).toBeTruthy();
-            expect(arr[1]).toEqual("[" + options.tags.join(" ") + "]");
+            expect(arr[1]).toEqual("[" + options.id + "]");
             expect(arr[2]).toEqual("[" + options.file + ":" + options.line + "]");
             expect(arr[3]).toEqual("[" + options.level.toString() + "] -");
             expect(arr.slice(4)).toEqual(options.args);

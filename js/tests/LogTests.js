@@ -29,7 +29,7 @@ define(function(require) {
 
     var Log = require("common/logging/Log"),
         fakeLogger = {
-            _processLogItem: function(){},
+            processLogItem: function(){},
             setLevel: function(){}
         };
 
@@ -47,7 +47,7 @@ define(function(require) {
         });
 
         describe("log instance creation", function(){
-            var log = new Log("tag1 tag2", fakeLogger);
+            var log = new Log("folder/moduleId", fakeLogger);
 
             it("has debug method",function() {
                 expect(typeof log.debug).toEqual("function");
@@ -63,9 +63,9 @@ define(function(require) {
             });
 
 
-            it("should call _processLogItem logger method", function(){
-                var spy = sinon.spy(fakeLogger, "_processLogItem");
-                var log = new Log("id", fakeLogger);
+            it("should call processLogItem logger method", function(){
+                var spy = sinon.spy(fakeLogger, "processLogItem");
+                var log = new Log("folder/moduleId", fakeLogger);
                 log.error("test error");
 
                 expect(spy).toHaveBeenCalled();
@@ -73,18 +73,27 @@ define(function(require) {
 
             });
             it("should return logItem object", function(){
-                var log = new Log("id", fakeLogger);
+                var log = new Log("folder/moduleId", fakeLogger);
                 var logError = log.error("test error");
 
                 expect(typeof logError).toEqual("object");
 
             });
             it("should pass logItem object as parameter to callback", function(){
-                var spy = sinon.spy(fakeLogger, "_processLogItem");
-                var log = new Log("id", fakeLogger);
+                var spy = sinon.spy(fakeLogger, "processLogItem");
+                var log = new Log("folder/moduleId", fakeLogger);
                 var logError = log.error("test error");
 
                 expect(spy).toHaveBeenCalledWith(logError);
+                spy.restore();
+
+            });
+            it("should call setLevel and pass level and module id as parameters", function(){
+                var spy = sinon.spy(fakeLogger, "setLevel");
+                var log = new Log("folder/moduleId", fakeLogger);
+                log.setLevel("error");
+
+                expect(spy).toHaveBeenCalledWith("error", "folder/moduleId");
                 spy.restore();
 
             });
@@ -95,15 +104,15 @@ define(function(require) {
 
             // id
             it("should create logItem with id passed from logger", function() {
-                var log = new Log("testId", fakeLogger);
+                var log = new Log("folder/moduleId", fakeLogger);
 
                 var logItem = log.error("msg");
-                expect(logItem.id).toEqual("testId");
+                expect(logItem.id).toEqual("folder/moduleId");
             });
 
             // id
             it("should create logItem with arguments", function() {
-                var log = new Log("testId", fakeLogger);
+                var log = new Log("folder/moduleId", fakeLogger);
                 var arr = [1,2,3];
 
                 var logItem = log.error("msg", arr);
@@ -113,7 +122,7 @@ define(function(require) {
 
             // time
             it("should create logItem with arguments", function() {
-                var log = new Log("testId", fakeLogger);
+                var log = new Log("folder/moduleId", fakeLogger);
 
                 var logItem = log.error("msg");
                 expect(logItem.time instanceof Date).toBeTruthy();
@@ -121,25 +130,25 @@ define(function(require) {
 
             // level
             it("should create logItem with level DEBUG", function() {
-                var log = new Log("testId", fakeLogger);
+                var log = new Log("folder/moduleId", fakeLogger);
 
                 var logItem = log.debug("msg");
                 expect(logItem.level.toString()).toEqual("DEBUG");
             });
             it("should create logItem with level INFO", function() {
-                var log = new Log("testId", fakeLogger);
+                var log = new Log("folder/moduleId", fakeLogger);
 
                 var logItem = log.info("msg");
                 expect(logItem.level.toString()).toEqual("INFO");
             });
             it("should create logItem with level WARN", function() {
-                var log = new Log("testId", fakeLogger);
+                var log = new Log("folder/moduleId", fakeLogger);
 
                 var logItem = log.warn("msg");
                 expect(logItem.level.toString()).toEqual("WARN");
             });
             it("should create logItem with level ERROR", function() {
-                var log = new Log("testId", fakeLogger);
+                var log = new Log("folder/moduleId", fakeLogger);
 
                 var logItem = log.error("msg");
                 expect(logItem.level.toString()).toEqual("ERROR");

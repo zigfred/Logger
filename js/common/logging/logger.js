@@ -28,11 +28,46 @@
 define(function (require, exports, module) {
     "use strict";
 
-    var LoggerManager = require("common/logging/LoggerManager"),
+    var
+        LoggerManager = require("common/logging/LoggerManager"),
+        levels = require("common/enum/loggingLevels"),
         config = module.config();
+
+    // check config
+    config = clearConfig(config);
 
     var logger = new LoggerManager(config);
 
     return logger;
 
+    function clearConfig(config) {
+        var cleared = {
+            root: {},
+            modules: {}
+        };
+        if (typeof config !== "object") {
+            return cleared;
+        }
+
+        if (config.hasOwnProperty("root")) {
+            if (typeof config.root.level === "string" && typeof levels[config.root.level.toUpperCase()] === "number") {
+                cleared.root.level = config.root.level;
+            }
+            if (typeof config.root.appenders === "object" && config.root.appenders[0]) {
+                cleared.root.appenders = config.root.appenders;
+            }
+        }
+
+        for (var i in config.modules) {
+            if (config.modules.hasOwnProperty(i)) {
+                if (i.match(/[\s]+/) || i === "" || typeof config.modules[i] !== "string") {
+                    continue;
+                }
+                if (typeof config.modules[i] === "string" && typeof levels[config.modules[i].toUpperCase()] === "number") {
+                    cleared.modules[i] = config.modules[i];
+                }
+            }
+        }
+        return cleared;
+    }
 });

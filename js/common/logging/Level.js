@@ -40,14 +40,20 @@
     }
 
     Level.prototype.isGreaterOrEqual = function(globalLevel) {
-        var levelNumber = (globalLevel instanceof Level ? globalLevel : Level.getLevel(globalLevel) ).level;
-        return this.level >= levelNumber;
+        var level;
+        if (globalLevel instanceof Level) {
+            return this.level >= globalLevel.level;
+        }
+        if (level = Level.getLevel(globalLevel)) {
+            return this.level >= level.level;
+        }
+        return false;
     };
     Level.prototype.toString = function() {
         return this.name;
     };
     Level.getLevel = function(level) {
-        return Level[level.toUpperCase()];
+        return Level[level && level.toUpperCase()] || false;
     };
 
     for (var i in levels) {

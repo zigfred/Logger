@@ -34,7 +34,7 @@
     }
 }(function () {
     "use strict";
-    
+
     function formatTime(date) {
         var timeString,
             h = date.getHours().toString(),
@@ -75,7 +75,7 @@
     LogItem.prototype.toArray = function() {
         var logParams = [];
         logParams.push(formatTime(this.time));
-        logParams.push("[" + this.tags.join(" ") + "]");
+        logParams.push("[" + this.id + "]");
         if (this.file !== "unknown"){
             logParams.push("[" + this.file + ":" + this.line + "]");
         }

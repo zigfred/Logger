@@ -51,7 +51,6 @@ define(function(require) {
             var log1 = logger.register("testString1");
             var log11 = logger.register("testString1");
             var log2 = logger.register({id:"testObject"});
-            var log1and2 = logger.register("testString1 testString2");
 
             it("should create log instance with string",function() {
                 expect(log1).toBeDefined();
@@ -72,10 +71,6 @@ define(function(require) {
                 expect(log2._id).toEqual("testObject");
             });
 
-            it("should create log instance with tags",function() {
-                expect(log1and2._id).toEqual("testString1 testString2");
-                expect(log1and2._tags).toEqual(["testString1", "testString2"]);
-            });
         });
 
         describe("enable and disable logging", function() {
@@ -104,7 +99,7 @@ define(function(require) {
             });
 
             it("should set level logging when enable logging",function() {
-                logger.enable("info");
+                logger.enable("root", "info");
 
                 log.debug("msg");
                 expect(logSpy).not.toHaveBeenCalled();
@@ -235,9 +230,9 @@ define(function(require) {
 
         });
 
-        describe("set levels for tags", function() {
+        describe("set levels mask", function() {
 
-            var log = logger.register("tag1 tag2 tag3");
+            var log = logger.register("report/viewer");
             var logSpy;
 
             beforeEach(function() {
@@ -248,31 +243,30 @@ define(function(require) {
             });
 
             it("should use root level logging",function() {
-                logger.enable("error");
+                logger.setLevel("error");
                 log.debug("msg");
                 expect(logSpy).not.toHaveBeenCalled();
 
                 log.error("msg");
                 expect(logSpy).toHaveBeenCalled();
             });
-            it("should use tag1 log level",function() {
-                logger.enable("error");
-                logger.setLevel("info", "tag1");
-
-                log.debug("msg");
-                expect(logSpy).not.toHaveBeenCalled();
+            it("should use folder mask log level",function() {
+                logger.setLevel("error");
+                logger.setLevel("warn", "report/*");
 
                 log.info("msg");
+                expect(logSpy).not.toHaveBeenCalled();
+
+                log.warn("msg");
                 expect(logSpy).toHaveBeenCalled();
             });
-            it("should use tag2 log level",function() {
-                logger.enable("error");
-                logger.setLevel("error", "tag1");
+            it("should use module name log level",function() {
+                logger.setLevel("error");
+                logger.setLevel("warn", "report/*");
+                logger.setLevel("info", "report/viewer");
 
                 log.debug("msg");
                 expect(logSpy).not.toHaveBeenCalled();
-
-                logger.setLevel("info", "tag2");
 
                 log.info("msg");
                 expect(logSpy).toHaveBeenCalled();
